@@ -13,13 +13,6 @@ class VerifyPersonodel {
     var serial_number: String? = null
 
 
-//    constructor(id_number: String?=null,first_name: String?=null, surname: String?=null, other_name: String?=null) {
-//        this.first_name = first_name
-//        this.id_number = id_number
-//        this.surname = surname
-//        this.other_name = other_name
-//    }
-
     constructor(
         id_number: String? = null,
         first_name: String? = null,

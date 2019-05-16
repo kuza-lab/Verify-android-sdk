@@ -5,7 +5,6 @@ import Enviroment
 import Verify
 import android.os.Bundle
 import android.text.InputType
-import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
@@ -154,7 +153,7 @@ class MainActivity : AppCompatActivity(), TokenCallListener {
 
 
                 phone_number = EditText(this)
-                phone_number?.hint = "Phone Number"
+                phone_number?.hint = "Phone Number "
                 phone_number?.inputType = InputType.TYPE_CLASS_DATETIME
                 layout.addView(phone_number)
 
@@ -240,31 +239,12 @@ class MainActivity : AppCompatActivity(), TokenCallListener {
 
         when (dialog) {
             DIALOGS.SEARCHPERSON -> {
-                when {
-                    edtIdNumber != null && !TextUtils.isEmpty(edtIdNumber?.text.toString()) -> searchPerson(edtIdNumber?.text.toString())
-                    else -> showError("ID Number")
-                }
+                searchPerson(edtIdNumber?.text.toString())
+
             }
             DIALOGS.VERIFYPERSON -> {
 
-//                when {
-//                    edtIdNumber==null&&TextUtils.isEmpty(edtIdNumber?.text.toString())&&
-//                            TextUtils.isEmpty(edtFristName?.text.toString())&&
-//                            TextUtils.isEmpty(edtSirName?.text.toString()) &&
-//                            TextUtils.isEmpty(other_name?.text.toString())&&
-//                            TextUtils.isEmpty(phone_number?.text.toString()) &&
-//                            TextUtils.isEmpty(gender?.text.toString()) &&
-//                            TextUtils.isEmpty(citizenship?.text.toString()) &&
-//                            TextUtils.isEmpty(date_of_birth?.text.toString())
-//
-//                    ->{
-//
-//                        showError("At least one ")
-//
-//
-//
-//                    }
-//                    else ->{
+
                 verifyPerson(
                     VerifyPersonodel(
                         id_number = edtIdNumber?.text.toString(),
@@ -277,36 +257,22 @@ class MainActivity : AppCompatActivity(), TokenCallListener {
                         date_of_birth = date_of_birth?.text.toString()
                     )
                 )
-                // }
-                //}
+
             }
             DIALOGS.SEARCHNCACONTRACTORID -> {
 
-                when {
-                    edtNcaContractorReg != null && !TextUtils.isEmpty(edtNcaContractorReg?.text.toString()) -> searchNcaContractorById(
-                        edtNcaContractorReg?.text.toString()
-                    )
-                    else -> showError("Contractor Registration Number")
-                }
+                searchNcaContractorById(edtNcaContractorReg?.text.toString())
+
             }
             DIALOGS.SEARCHNCACONTRACTORNAME -> {
 
-                when {
-                    edtNcaContractorName != null && !TextUtils.isEmpty(edtNcaContractorName?.text.toString()) -> searchNcaContractorByName(
-                        edtNcaContractorName?.text.toString()
-                    )
-                    else -> showError("Contractor Name")
-                }
+                searchNcaContractorByName(edtNcaContractorName?.text.toString())
+
             }
             DIALOGS.VERIFYNCACONTRACTOR -> {
 
-                when {
-                    !TextUtils.isEmpty(edtNcaContractorReg?.text.toString()) && !TextUtils.isEmpty(edtNcaContractorName?.text.toString()) && !TextUtils.isEmpty(
-                        edtNcaContractorCategory?.text.toString()
-                    ) && !TextUtils.isEmpty(edtNcaContractorTown?.text.toString()) && !TextUtils.isEmpty(
-                        edtNcaContractorClass?.text.toString()
-                    ) -> {
-                        verifyNcaContractor(
+
+                verifyNcaContractor(
                             VerifyNcaContractor(
                                 edtNcaContractorReg?.text.toString(),
                                 edtNcaContractorName?.text.toString(),
@@ -316,9 +282,7 @@ class MainActivity : AppCompatActivity(), TokenCallListener {
                             )
                         )
 
-                    }
-                    else -> showError("Registration Number,Name , Town , Category, Class ")
-                }
+
             }
         }
     }
@@ -486,7 +450,6 @@ class MainActivity : AppCompatActivity(), TokenCallListener {
 
             override fun onFailure(verifyException: VerifyException) {
                 setProgressBarVisibility(View.GONE)
-
                 Toast.makeText(this@MainActivity, verifyException.errorMessage, Toast.LENGTH_LONG).show()
             }
         })

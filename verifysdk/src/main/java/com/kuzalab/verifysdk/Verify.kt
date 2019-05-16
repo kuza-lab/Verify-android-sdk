@@ -80,7 +80,7 @@ class Verify(
     }
 
 
-    fun getPerson(s: String, getUserDetailsListener: GetUserDetailsListener) {
+    fun getPerson(s: String?, getUserDetailsListener: GetUserDetailsListener) {
 
         if (s == null) {
             getUserDetailsListener.onFailure(VerifyException("Id number cannot be null"))
@@ -136,6 +136,11 @@ class Verify(
 
         ) {
             verifyUserDetailsListener.onFailure(VerifyException("Must have atleast one field not null"))
+            return
+        }
+
+        if (verifyPersonModel.id_number == null && verifyPersonModel.phone_number == null) {
+            verifyUserDetailsListener.onFailure(VerifyException("Id number or Phone number must be filled"))
             return
         }
 
@@ -483,6 +488,11 @@ class Verify(
 
         ) {
             verifyNcaContractorListener.onFailure(VerifyException("Must have atleast one field not null"))
+            return
+        }
+
+        if (verifyNcaContractor.registration_no == null) {
+            verifyNcaContractorListener.onFailure(VerifyException("Registration field must be filled"))
             return
         }
 
