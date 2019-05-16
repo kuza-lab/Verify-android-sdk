@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:orientation="vertical"
+              android:padding="8dp" android:layout_height="match_parent">
+    <TextView android:layout_width="match_parent"
+              android:text="Person"
+              android:textAppearance="@style/TextAppearance.AppCompat.Large"
+              android:textStyle="bold"
+              android:textAlignment="center"
+              android:layout_height="wrap_content"/>
+    <View android:layout_width="match_parent"
+          android:background="@color/colorPrimaryDark"
+          android:layout_height="2dp"/>
+
+    <LinearLayout
+
+            android:padding="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:text="National Id"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:id="@+id/id_number"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+    <LinearLayout
+
+            android:padding="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:text="ID issue Date"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:id="@+id/date_of_issue"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+    <LinearLayout
+
+            android:padding="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:text="First Name"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+
+                android:id="@+id/first_name"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+    <LinearLayout
+
+            android:padding="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:text="Surname"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+
+                android:id="@+id/surname"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+    <LinearLayout
+
+            android:padding="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:text="Other Name"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+
+                android:id="@+id/other_name"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+    <LinearLayout
+
+            android:padding="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:text="Phone Number"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+
+                android:id="@+id/phone"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+    <LinearLayout
+
+            android:padding="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:text="Date Of Birth"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+
+                android:id="@+id/dob"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+    <LinearLayout
+
+            android:padding="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:text="Occupation"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+
+                android:id="@+id/occupation"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+    <LinearLayout
+
+            android:padding="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:text="Place of Birth"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+
+                android:id="@+id/place_of_birth"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+    <LinearLayout
+
+            android:padding="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:text="Place of Live"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+
+                android:id="@+id/place_of_live"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+    <LinearLayout
+
+            android:padding="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:text="Is Alive"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+        <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+
+                android:id="@+id/is_alive"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <include layout="@layout/verification_status_view"/>
+
+
+</LinearLayout>
+    
