@@ -6,6 +6,6 @@ import com.kuzalab.verifysdk.models.VerifyException
 
 interface SearchNcaContractorByIdListener {
     fun onCallStarted()
-    fun onResponse(ncaContractor: NcaContractor, verificationStatus: Boolean, verificationMessage: String)
+    fun onResponse(ncaContractor: NcaContractor)
     fun onFailure(verifyException: VerifyException)
 }

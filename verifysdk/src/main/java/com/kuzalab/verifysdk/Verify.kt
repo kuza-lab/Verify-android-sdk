@@ -1,6 +1,7 @@
 import android.content.Context
-import android.util.Log
-import com.google.gson.Gson
+import com.kuzalab.verifysdk.ErrorUtils
+import com.kuzalab.verifysdk.Validator
+import com.kuzalab.verifysdk.data.VerifyConstants
 import com.kuzalab.verifysdk.interfaces.*
 import com.kuzalab.verifysdk.models.*
 import kotlinx.coroutines.Dispatchers
@@ -13,42 +14,38 @@ import retrofit2.Response
 class Verify(
 
     private val context: Context,
-
     private val enviroment: Enviroment = Enviroment.PRODUCTION,
     private val consumerKey: String? = null,
-    private val secretKey: String? = null,
-    private val handleTokenInternally: Boolean? = true,
-    private val tokenCallListener: TokenCallListener? = null
+    private val secretKey: String? = null
 
 
 ) {
+    val VERIFY_DATE_FORMAT = VerifyConstants().VERIFY_DATE_FORMAT
+    val VERIFY_GENDER_ARRAY = VerifyConstants().VERIFY_GENDER_ARRAY
+
     private var token: String? = null
 
+    fun generateToken(tokenCallListener: TokenCallListener?) {
+        tokenCallListener?.onTokenCallStarted()
 
-    private fun generateToken(tokenCallListener: TokenCallListener?) {
         if (!NetworkUtils.isConnected(context)) {
             tokenCallListener?.onTokenCallFailed(VerifyException("No internet connection"))
             return
         }
-        if (consumerKey != null && secretKey != null) {
-            tokenCallListener?.onTokenCallStarted()
-
+        if (!Validator().isNull(consumerKey) && !Validator().isNull(secretKey)) {
             GlobalScope.launch(context = Dispatchers.Main) {
-                val call = RequestService.getService(consumerKey, secretKey, getBaseUrl()).generateToken()
+                val call = RequestService.getService(consumerKey!!, secretKey!!, getBaseUrl()).generateToken()
                 call.enqueue(object : Callback<AuthToken> {
                     override fun onFailure(call: Call<AuthToken>?, t: Throwable?) {
-                        Log.d("VerifySdkErrorLog", t.toString())
-
                         tokenCallListener?.onTokenCallFailed(VerifyException("" + t))
 
                     }
 
                     override fun onResponse(call: Call<AuthToken>?, response: Response<AuthToken>?) {
-                        Log.d("VerifySdkErrorLog", response.toString())
 
                         if (response != null) {
                             if (response.isSuccessful) {
-                                if (response.body()?.success!!) {
+                                if (response.body()?.success == true && response.body()?.data != null) {
                                     token = response.body()?.data?.token
                                     tokenCallListener?.onTokenRecieved(response.body()?.data!!)
                                 } else {
@@ -62,7 +59,8 @@ class Verify(
 
                                 }
                             } else {
-                                tokenCallListener?.onTokenCallFailed(VerifyException(response.message()))
+
+                                tokenCallListener?.onTokenCallFailed(ErrorUtils().parseError(response))
 
                             }
                         } else {
@@ -74,44 +72,40 @@ class Verify(
                 })
             }
 
+        } else {
+            tokenCallListener?.onTokenCallFailed(VerifyException("Error Authentication App. Consumer Key or Secret Key is invalid or null"))
+
         }
 
 
     }
 
-
     fun getPerson(s: String?, getUserDetailsListener: GetUserDetailsListener) {
 
-        if (s == null) {
+        if (Validator().isNull(s)) {
             getUserDetailsListener.onFailure(VerifyException("Id number cannot be null"))
-            return
-        }
-        if (getUserDetailsListener == null) {
-            getUserDetailsListener.onFailure(VerifyException("Not listener set"))
             return
         }
 
 
         if (token != null) {
-
-            loadPerson(s, getUserDetailsListener)
+            loadPerson(s!!, getUserDetailsListener)
 
 
         } else {
             generateToken(object : TokenCallListener {
                 override fun onTokenCallStarted() {
-                    tokenCallListener?.onTokenCallStarted()
+                    getUserDetailsListener.onCallStarted()
 
                 }
 
                 override fun onTokenRecieved(token: Token) {
-                    tokenCallListener?.onTokenRecieved(token)
-                    loadPerson(s, getUserDetailsListener)
+                    loadPerson(s!!, getUserDetailsListener)
 
                 }
 
                 override fun onTokenCallFailed(verifyException: VerifyException) {
-                    tokenCallListener?.onTokenCallFailed(verifyException)
+                    getUserDetailsListener.onFailure(verifyException)
 
                 }
             })
@@ -121,28 +115,20 @@ class Verify(
 
     }
 
+
     fun verifyPerson(verifyPersonModel: VerifyPersonodel, verifyUserDetailsListener: VerifyUserDetailsListener) {
 
-        if (verifyPersonModel.first_name == null
-            && verifyPersonModel.surname == null
-            && verifyPersonModel.other_name == null
-            && verifyPersonModel.gender == null
-            && verifyPersonModel.citizenship == null
-            && verifyPersonModel.date_of_birth == null
-            && verifyPersonModel.phone_number == null
-            && verifyPersonModel.id_number == null
-            && verifyPersonModel.serial_number == null
 
-
-        ) {
-            verifyUserDetailsListener.onFailure(VerifyException("Must have atleast one field not null"))
+        val objectVerification = Validator().validatePersonObject(verifyPersonModel)
+        if (!objectVerification.isValid) {
+            verifyUserDetailsListener.onFailure(VerifyException(objectVerification.reasonInvalid))
             return
         }
 
-        if (verifyPersonModel.id_number == null && verifyPersonModel.phone_number == null) {
-            verifyUserDetailsListener.onFailure(VerifyException("Id number or Phone number must be filled"))
-            return
-        }
+
+
+
+
 
         if (token != null) {
 
@@ -152,27 +138,33 @@ class Verify(
         } else {
             generateToken(object : TokenCallListener {
                 override fun onTokenCallStarted() {
-                    tokenCallListener?.onTokenCallStarted()
+                    verifyUserDetailsListener.onCallStarted()
 
                 }
 
                 override fun onTokenRecieved(token: Token) {
-                    tokenCallListener?.onTokenRecieved(token)
                     loadVerifyPerson(verifyPersonModel, verifyUserDetailsListener)
 
                 }
 
                 override fun onTokenCallFailed(verifyException: VerifyException) {
-                    tokenCallListener?.onTokenCallFailed(verifyException)
+                    verifyUserDetailsListener.onFailure(verifyException)
 
                 }
             })
 
         }
+            
+        
 
     }
 
-    fun loadVerifyPerson(verifyPersonModel: VerifyPersonodel, verifyUserDetailsListener: VerifyUserDetailsListener) {
+    private fun loadVerifyPerson(
+        verifyPersonModel: VerifyPersonodel,
+        verifyUserDetailsListener: VerifyUserDetailsListener
+    ) {
+
+        verifyUserDetailsListener.onCallStarted()
         if (!NetworkUtils.isConnected(context)) {
             verifyUserDetailsListener.onFailure(VerifyException("No internet connection"))
             return
@@ -182,16 +174,14 @@ class Verify(
                 .verifyPerson(verifyPersonModel.id_number!!, verifyPersonModel)
             call.enqueue(object : Callback<VerifyPersonResponse> {
                 override fun onFailure(call: Call<VerifyPersonResponse>?, t: Throwable?) {
-                    Log.d("VerifySdkErrorLog", "" + t)
                     verifyUserDetailsListener.onFailure(VerifyException("" + t))
 
                 }
 
                 override fun onResponse(call: Call<VerifyPersonResponse>?, response: Response<VerifyPersonResponse>?) {
-                    Log.d("VerifySdkErrorLog", response.toString() + " Token  " + token)
                     if (response != null) {
                         if (response.isSuccessful) {
-                            if (response.body()?.success!!) {
+                            if (response.body()?.success == true && response.body()?.data != null) {
                                 verifyUserDetailsListener.onResponse(response.body()?.data!!)
                             } else {
                                 verifyUserDetailsListener.onFailure(
@@ -204,7 +194,7 @@ class Verify(
 
                             }
                         } else {
-                            verifyUserDetailsListener.onFailure(VerifyException(response.toString()))
+                            verifyUserDetailsListener.onFailure(ErrorUtils().parseError(response))
 
                         }
                     } else {
@@ -219,40 +209,38 @@ class Verify(
     }
 
     private fun loadPerson(id: String, userDetailsListener: GetUserDetailsListener) {
+        userDetailsListener.onCallStarted()
 
         if (!NetworkUtils.isConnected(context)) {
             userDetailsListener.onFailure(VerifyException("No internet connection"))
             return
         }
-        userDetailsListener.onCallStarted()
 
         GlobalScope.launch(context = Dispatchers.Main) {
             val call = RequestService.getService(token!!, getBaseUrl()).searchIdNumber(id)
             call.enqueue(object : Callback<SearchUserResponse> {
                 override fun onFailure(call: Call<SearchUserResponse>?, t: Throwable?) {
-                    Log.d("VerifySdkErrorLog", "" + t)
                     userDetailsListener.onFailure(VerifyException("" + t))
 
                 }
 
                 override fun onResponse(call: Call<SearchUserResponse>?, response: Response<SearchUserResponse>?) {
-                    Log.d("VerifySdkErrorLog", response.toString() + " Token  " + token)
                     if (response != null) {
                         if (response.isSuccessful) {
-                            if (response.body()?.success!!) {
+                            if (response.body()?.success == true && response.body()?.data != null) {
                                 userDetailsListener.onResponse(response.body()?.data!!)
                             } else {
                                 userDetailsListener.onFailure(
                                     VerifyException(
                                         response.body()?.message,
-                                        "",
+                                        response.body()?.message,
                                         response.body()?.errors
                                     )
                                 )
 
                             }
                         } else {
-                            userDetailsListener.onFailure(VerifyException(response.toString()))
+                            userDetailsListener.onFailure(ErrorUtils().parseError(response))
 
                         }
                     } else {
@@ -283,19 +271,12 @@ class Verify(
         return baseUrls
     }
 
-
     fun searchNcaContractorById(s: String, searchNcaContractorByIdListener: SearchNcaContractorByIdListener) {
 
-        if (s == null) {
-            searchNcaContractorByIdListener.onFailure(VerifyException("Registration number cannot be null"))
+        if (Validator().isNull(s)) {
+            searchNcaContractorByIdListener.onFailure(VerifyException("Registration number must be set"))
             return
         }
-        if (searchNcaContractorByIdListener == null) {
-            searchNcaContractorByIdListener.onFailure(VerifyException("Not listener set"))
-            return
-        }
-
-
         if (token != null) {
 
             loadNcaContractor(s, searchNcaContractorByIdListener)
@@ -304,18 +285,17 @@ class Verify(
         } else {
             generateToken(object : TokenCallListener {
                 override fun onTokenCallStarted() {
-                    tokenCallListener?.onTokenCallStarted()
+                    searchNcaContractorByIdListener.onCallStarted()
 
                 }
 
                 override fun onTokenRecieved(token: Token) {
-                    tokenCallListener?.onTokenRecieved(token)
                     loadNcaContractor(s, searchNcaContractorByIdListener)
 
                 }
 
                 override fun onTokenCallFailed(verifyException: VerifyException) {
-                    tokenCallListener?.onTokenCallFailed(verifyException)
+                    searchNcaContractorByIdListener.onFailure(verifyException)
 
                 }
             })
@@ -326,47 +306,57 @@ class Verify(
     }
 
     private fun loadNcaContractor(s: String, searchNcaContractorByIdListener: SearchNcaContractorByIdListener) {
+        searchNcaContractorByIdListener.onCallStarted()
+
         if (!NetworkUtils.isConnected(context)) {
             searchNcaContractorByIdListener.onFailure(VerifyException("No internet connection"))
             return
         }
-        searchNcaContractorByIdListener.onCallStarted()
 
         GlobalScope.launch(context = Dispatchers.Main) {
             val call = RequestService.getService(token!!, getBaseUrl()).searchNcaContractorById(s)
             call.enqueue(object : Callback<SearchNcaContractorResponse> {
                 override fun onFailure(call: Call<SearchNcaContractorResponse>?, t: Throwable?) {
-                    Log.d("VerifySdkErrorLog", t.toString() + " Token  " + token)
-
                     searchNcaContractorByIdListener.onFailure(VerifyException("" + t?.message))
 
                 }
 
                 override fun onResponse(
-                    call: Call<SearchNcaContractorResponse>?,
-                    response: Response<SearchNcaContractorResponse>?
+                    call: Call<SearchNcaContractorResponse>?, response: Response<SearchNcaContractorResponse>?
                 ) {
-                    Log.d("VerifySdkErrorLog", Gson().toJson(response) + " Token  " + token)
                     if (response != null) {
                         if (response.isSuccessful) {
-                            if (response.body()?.success!!) {
-                                searchNcaContractorByIdListener.onResponse(
-                                    response.body()?.data!!,
-                                    response.body()?.data!!.verified!!,
-                                    response.body()?.data!!.status!!
-                                )
+
+
+                            if (response.body() != null) {
+
+                                if (response.body()?.data != null && response.body()?.success == true) {
+                                    searchNcaContractorByIdListener.onResponse(
+                                        response.body()?.data as NcaContractor
+                                    )
+                                } else {
+                                    searchNcaContractorByIdListener.onFailure(
+                                        VerifyException(
+                                            response.body()?.message,
+                                            response.body()?.message,
+                                            response.body()?.errors
+                                        )
+                                    )
+                                }
+
                             } else {
                                 searchNcaContractorByIdListener.onFailure(
                                     VerifyException(
-                                        response.body()?.message,
-                                        "",
-                                        response.body()?.errors
+                                        response.message()
                                     )
                                 )
 
+
                             }
+
+
                         } else {
-                            searchNcaContractorByIdListener.onFailure(VerifyException(response.message()))
+                            searchNcaContractorByIdListener.onFailure(ErrorUtils().parseError(response))
 
                         }
                     } else {
@@ -382,17 +372,17 @@ class Verify(
     }
 
     private fun loadNcaContractors(s: String, searchNcaContractorByNameListener: SearchNcaContractorByNameListener) {
+        searchNcaContractorByNameListener.onCallStarted()
+
         if (!NetworkUtils.isConnected(context)) {
             searchNcaContractorByNameListener.onFailure(VerifyException("No internet connection"))
             return
         }
-        searchNcaContractorByNameListener.onCallStarted()
 
         GlobalScope.launch(context = Dispatchers.Main) {
             val call = RequestService.getService(token!!, getBaseUrl()).searchNcaContractorByName(s)
             call.enqueue(object : Callback<SearchNcaContractorsResponse> {
                 override fun onFailure(call: Call<SearchNcaContractorsResponse>?, t: Throwable?) {
-                    Log.d("VerifySdkErrorLog", t.toString() + " Token  " + token)
 
                     searchNcaContractorByNameListener.onFailure(VerifyException("" + t?.message))
 
@@ -402,23 +392,23 @@ class Verify(
                     call: Call<SearchNcaContractorsResponse>?,
                     response: Response<SearchNcaContractorsResponse>?
                 ) {
-                    Log.d("VerifySdkErrorLog", Gson().toJson(response) + " Token  " + token)
                     if (response != null) {
                         if (response.isSuccessful) {
-                            if (response.body()?.success!!) {
+
+                            if (response.body()?.success == true && response.body()?.data != null) {
                                 searchNcaContractorByNameListener.onResponse(response.body()?.data!!)
                             } else {
                                 searchNcaContractorByNameListener.onFailure(
                                     VerifyException(
                                         response.body()?.message,
-                                        "",
+                                        response.body()?.message,
                                         response.body()?.errors
                                     )
                                 )
 
                             }
                         } else {
-                            searchNcaContractorByNameListener.onFailure(VerifyException(response.message()))
+                            searchNcaContractorByNameListener.onFailure(ErrorUtils().parseError(response))
 
                         }
                     } else {
@@ -434,36 +424,31 @@ class Verify(
     }
 
     fun searchNcaContractorByName(s: String?, searchNcaContractorByNameListener: SearchNcaContractorByNameListener) {
-        if (s == null) {
+        if (Validator().isNull(s)) {
             searchNcaContractorByNameListener.onFailure(VerifyException("Name cannot be null"))
-            return
-        }
-        if (searchNcaContractorByNameListener == null) {
-            searchNcaContractorByNameListener.onFailure(VerifyException("Not listener set"))
             return
         }
 
 
         if (token != null) {
 
-            loadNcaContractors(s, searchNcaContractorByNameListener)
+            loadNcaContractors(s!!, searchNcaContractorByNameListener)
 
 
         } else {
             generateToken(object : TokenCallListener {
                 override fun onTokenCallStarted() {
-                    tokenCallListener?.onTokenCallStarted()
+                    searchNcaContractorByNameListener.onCallStarted()
 
                 }
 
                 override fun onTokenRecieved(token: Token) {
-                    tokenCallListener?.onTokenRecieved(token)
-                    loadNcaContractors(s, searchNcaContractorByNameListener)
+                    loadNcaContractors(s!!, searchNcaContractorByNameListener)
 
                 }
 
                 override fun onTokenCallFailed(verifyException: VerifyException) {
-                    tokenCallListener?.onTokenCallFailed(verifyException)
+                    searchNcaContractorByNameListener.onFailure(verifyException)
 
                 }
             })
@@ -474,27 +459,19 @@ class Verify(
     }
 
     fun verifyNcaContractor(
-        verifyNcaContractor: VerifyNcaContractor,
-        verifyNcaContractorListener: verifyNcaContractorListener
+        verifyNcaContractor: VerifyNcaContractor, verifyNcaContractorListener: verifyNcaContractorListener
     ) {
 
 
-        if (verifyNcaContractor.registration_no == null
-            && verifyNcaContractor.contractor_name == null
-            && verifyNcaContractor.town == null
-            && verifyNcaContractor.category == null
-            && verifyNcaContractor.contractor_class == null
+        val objectVerificationModel = Validator().validateNcaObject(verifyNcaContractor)
 
-
-        ) {
-            verifyNcaContractorListener.onFailure(VerifyException("Must have atleast one field not null"))
+        if (!objectVerificationModel.isValid) {
+            verifyNcaContractorListener.onFailure(VerifyException(objectVerificationModel.reasonInvalid))
             return
         }
 
-        if (verifyNcaContractor.registration_no == null) {
-            verifyNcaContractorListener.onFailure(VerifyException("Registration field must be filled"))
-            return
-        }
+
+
 
         if (token != null) {
 
@@ -504,18 +481,17 @@ class Verify(
         } else {
             generateToken(object : TokenCallListener {
                 override fun onTokenCallStarted() {
-                    tokenCallListener?.onTokenCallStarted()
+                    verifyNcaContractorListener.onCallStarted()
 
                 }
 
                 override fun onTokenRecieved(token: Token) {
-                    tokenCallListener?.onTokenRecieved(token)
                     loadverifyNcaContractor(verifyNcaContractor, verifyNcaContractorListener)
 
                 }
 
                 override fun onTokenCallFailed(verifyException: VerifyException) {
-                    tokenCallListener?.onTokenCallFailed(verifyException)
+                    verifyNcaContractorListener.onFailure(verifyException)
 
                 }
             })
@@ -524,10 +500,11 @@ class Verify(
 
     }
 
-    fun loadverifyNcaContractor(
-        verifyNcaContractor: VerifyNcaContractor,
-        verifyNcaContractorListener: verifyNcaContractorListener
+    private fun loadverifyNcaContractor(
+        verifyNcaContractor: VerifyNcaContractor, verifyNcaContractorListener: verifyNcaContractorListener
     ) {
+        verifyNcaContractorListener.onCallStarted()
+
         if (!NetworkUtils.isConnected(context)) {
             verifyNcaContractorListener.onFailure(VerifyException("No internet connection"))
             return
@@ -537,19 +514,15 @@ class Verify(
                 .verifyNcaContractor(verifyNcaContractor.registration_no!!, verifyNcaContractor)
             call.enqueue(object : Callback<VerifyNcaContractorResponse> {
                 override fun onFailure(call: Call<VerifyNcaContractorResponse>?, t: Throwable?) {
-                    Log.d("VerifySdkErrorLog", "" + t)
                     verifyNcaContractorListener.onFailure(VerifyException("" + t))
-
                 }
-
                 override fun onResponse(
                     call: Call<VerifyNcaContractorResponse>?,
                     response: Response<VerifyNcaContractorResponse>?
                 ) {
-                    Log.d("VerifySdkErrorLog", response.toString() + " Token  " + token)
                     if (response != null) {
                         if (response.isSuccessful) {
-                            if (response.body()?.success!!) {
+                            if (response.body()?.success == true && response.body()?.data != null) {
                                 verifyNcaContractorListener.onResponse(response.body()?.data!!)
                             } else {
                                 verifyNcaContractorListener.onFailure(
@@ -562,7 +535,7 @@ class Verify(
 
                             }
                         } else {
-                            verifyNcaContractorListener.onFailure(VerifyException(response.toString()))
+                            verifyNcaContractorListener.onFailure(ErrorUtils().parseError(response))
 
                         }
                     } else {
@@ -580,25 +553,15 @@ class Verify(
         var context: Context,
         var enviroment: Enviroment = Enviroment.PRODUCTION,
         var consumerKey: String? = null,
-        var secretKey: String? = null,
-        var handleTokenInternally: Boolean? = true,
-        var tokenCallListener: TokenCallListener? = null
+        var secretKey: String? = null
     ) {
 
         fun enviroment(enviroment: Enviroment) = apply { this.enviroment = enviroment }
         fun consumerKey(consumerKey: String?) = apply { this.consumerKey = consumerKey }
         fun secretKey(secretKey: String) = apply { this.secretKey = secretKey }
-        fun setContext(context: Context) = apply { this.context = context }
-        fun handleTokenInternally(handleTokenInternally: Boolean?, tokenCallListener: TokenCallListener) =
-
-            apply {
-                this.handleTokenInternally = handleTokenInternally
-                this.tokenCallListener = tokenCallListener
-
-            }
 
 
-        fun build() = Verify(context, enviroment, consumerKey, secretKey, handleTokenInternally, tokenCallListener)
+        fun build() = Verify(context, enviroment, consumerKey, secretKey)
 
 
     }

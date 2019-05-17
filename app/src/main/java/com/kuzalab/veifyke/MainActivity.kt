@@ -3,6 +3,7 @@ package com.kuzalab.veifyke
 
 import Enviroment
 import Verify
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.InputType
 import android.view.View
@@ -20,42 +21,27 @@ import kotlinx.android.synthetic.main.nca_response_view.view.*
 import kotlinx.android.synthetic.main.person_response_view.view.*
 import kotlinx.android.synthetic.main.recycler_view.view.*
 import kotlinx.android.synthetic.main.verification_status_view.view.*
+import java.text.SimpleDateFormat
+import java.util.*
 
+class MainActivity : AppCompatActivity() {
 
-class MainActivity : AppCompatActivity(), TokenCallListener {
-    override fun onTokenCallStarted() {
-
-        setProgressBarVisibility(View.VISIBLE)
-    }
-
-    override fun onTokenRecieved(token: Token) {
-        setProgressBarVisibility(View.GONE)
-        Toast.makeText(this@MainActivity, "Token Recieved", Toast.LENGTH_LONG).show()
-
-    }
-
-    override fun onTokenCallFailed(verifyException: VerifyException) {
-        setProgressBarVisibility(View.GONE)
-        Toast.makeText(this@MainActivity, verifyException.errorMessage, Toast.LENGTH_LONG).show()
-
-    }
-
+    var edtIdNumber: EditText? = null
+    var edtFristName: EditText? = null
+    var edtSirName: EditText? = null
+    var edtOtherName: EditText? = null
+    var edtCitizenship: EditText? = null
+    var edtDateOfBirth: EditText? = null
+    var edtGender: EditText? = null
+    var edtPhoneNumber: EditText? = null
+    var edtNcaContractorReg: EditText? = null
+    var edtNcaContractorName: EditText? = null
+    var edtNcaContractorTown: EditText? = null
+    var edtNcaContractorCategory: EditText? = null
+    var edtNcaContractorClass: EditText? = null
 
     var v: Verify? = null
-    private fun setProgressBarVisibility(visible: Int) {
-        if (progress_bar != null) {
-            progress_bar?.visibility = visible
-        }
 
-        if (visible == View.VISIBLE) {
-            window?.setFlags(
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-            )
-        } else {
-            window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +51,6 @@ class MainActivity : AppCompatActivity(), TokenCallListener {
             .secretKey("tIpl3tw0agl9urNqianIAiYzPR5YnFMGriIad0qjcPq1c9HGsUuJhOkQRfZ5MuJY")
             .consumerKey("7Jp5N68ctdAtxqruKtQtFHmgLneY3S8Cz2iOKPtF4D5s715A1XWDo3oHHlEZ4Jgf")
             .enviroment(Enviroment.PRODUCTION)
-            .handleTokenInternally(true, this)
             .build()
 
         setProgressBarVisibility(View.GONE)
@@ -76,25 +61,6 @@ class MainActivity : AppCompatActivity(), TokenCallListener {
         btn_verify_contractor.setOnClickListener { launchDialog(DIALOGS.VERIFYNCACONTRACTOR) }
 
     }
-
-
-    var edtIdNumber: EditText? = null
-    var edtFristName: EditText? = null
-    var edtSirName: EditText? = null
-    var edtOtherName: EditText? = null
-    var citizenship: EditText? = null
-    var date_of_birth: EditText? = null
-    var gender: EditText? = null
-    var phone_number: EditText? = null
-
-
-    var edtNcaContractorReg: EditText? = null
-    var edtNcaContractorName: EditText? = null
-
-    var edtNcaContractorTown: EditText? = null
-    var edtNcaContractorCategory: EditText? = null
-    var edtNcaContractorClass: EditText? = null
-
 
     private fun getLayout(dialog: DIALOGS): LinearLayout {
         val layout = LinearLayout(this)
@@ -134,28 +100,34 @@ class MainActivity : AppCompatActivity(), TokenCallListener {
 
 
 
-                citizenship = EditText(this)
-                citizenship?.hint = "Citizenship"
-                citizenship?.inputType = InputType.TYPE_CLASS_TEXT
-                layout.addView(citizenship)
+                edtCitizenship = EditText(this)
+                edtCitizenship?.hint = "Citizenship"
+                edtCitizenship?.inputType = InputType.TYPE_CLASS_TEXT
+                layout.addView(edtCitizenship)
 
 
-                date_of_birth = EditText(this)
-                date_of_birth?.hint = "Date Of Birth"
-                date_of_birth?.inputType = InputType.TYPE_CLASS_DATETIME
-                layout.addView(date_of_birth)
+                edtDateOfBirth = EditText(this)
+                edtDateOfBirth?.hint = "Date Of Birth"
+                edtDateOfBirth?.isFocusable = false
+                edtDateOfBirth?.isFocusableInTouchMode = false
+                edtDateOfBirth?.setOnClickListener { chooseDob() }
+                edtDateOfBirth?.inputType = InputType.TYPE_CLASS_TEXT
+                layout.addView(edtDateOfBirth)
 
-                gender = EditText(this)
-                gender?.hint = "Gender"
-                gender?.inputType = InputType.TYPE_CLASS_DATETIME
-                layout.addView(gender)
+                edtGender = EditText(this)
+                edtGender?.hint = "Gender"
+                edtGender?.isFocusable = false
+                edtGender?.isFocusableInTouchMode = false
+                edtGender?.setOnClickListener { chooseGender() }
+                edtGender?.inputType = InputType.TYPE_CLASS_TEXT
+                layout.addView(edtGender)
 
 
 
-                phone_number = EditText(this)
-                phone_number?.hint = "Phone Number "
-                phone_number?.inputType = InputType.TYPE_CLASS_DATETIME
-                layout.addView(phone_number)
+                edtPhoneNumber = EditText(this)
+                edtPhoneNumber?.hint = "Phone Number "
+                edtPhoneNumber?.inputType = InputType.TYPE_CLASS_DATETIME
+                layout.addView(edtPhoneNumber)
 
 
             }
@@ -179,28 +151,28 @@ class MainActivity : AppCompatActivity(), TokenCallListener {
 
             DIALOGS.VERIFYNCACONTRACTOR -> {
                 edtNcaContractorReg = EditText(this)
-                edtNcaContractorReg?.hint = "Contractors Registration Number (*)"
+                edtNcaContractorReg?.hint = "Contractors Registration Number "
                 edtNcaContractorReg?.inputType = InputType.TYPE_CLASS_TEXT
                 layout.addView(edtNcaContractorReg)
 
 
                 edtNcaContractorName = EditText(this)
-                edtNcaContractorName?.hint = "Contractors Name (*)"
+                edtNcaContractorName?.hint = "Contractors Name "
                 edtNcaContractorName?.inputType = InputType.TYPE_CLASS_TEXT
                 layout.addView(edtNcaContractorName)
 
                 edtNcaContractorTown = EditText(this)
-                edtNcaContractorTown?.hint = "Contractors Town (*)"
+                edtNcaContractorTown?.hint = "Contractors Town "
                 edtNcaContractorTown?.inputType = InputType.TYPE_CLASS_TEXT
                 layout.addView(edtNcaContractorTown)
 
                 edtNcaContractorCategory = EditText(this)
-                edtNcaContractorCategory?.hint = "Contractors Category (*)"
+                edtNcaContractorCategory?.hint = "Contractors Category "
                 edtNcaContractorCategory?.inputType = InputType.TYPE_CLASS_TEXT
                 layout.addView(edtNcaContractorCategory)
 
                 edtNcaContractorClass = EditText(this)
-                edtNcaContractorClass?.hint = "Contractor Class (*)"
+                edtNcaContractorClass?.hint = "Contractor Class "
                 edtNcaContractorClass?.inputType = InputType.TYPE_CLASS_TEXT
                 layout.addView(edtNcaContractorClass)
 
@@ -211,25 +183,46 @@ class MainActivity : AppCompatActivity(), TokenCallListener {
         return layout
     }
 
+    private fun chooseGender() {
+        lateinit var dialog: AlertDialog
+        val array = v?.VERIFY_GENDER_ARRAY
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Choose a edtGender.")
+        builder.setSingleChoiceItems(array, -1) { _, which ->
+            edtGender?.setText(array!![which])
+            dialog.dismiss()
+        }
+        dialog = builder.create()
+        dialog.show()
+
+    }
+
+    private fun chooseDob() {
+        val c = Calendar.getInstance()
+        val year = c.get(Calendar.YEAR)
+        val month = c.get(Calendar.MONTH)
+        val day = c.get(Calendar.DAY_OF_MONTH)
+        val cal = Calendar.getInstance()
+        val dpd = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { view, yeard, monthOfYear, dayOfMonth ->
+            cal.set(Calendar.YEAR, yeard)
+            cal.set(Calendar.MONTH, monthOfYear)
+            cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+            val sdf = SimpleDateFormat(v?.VERIFY_DATE_FORMAT, Locale.US)
+            edtDateOfBirth?.setText(sdf.format(cal.time))
+        }, year, month, day)
+        dpd.datePicker.maxDate = Date().time
+        dpd.show()
+
+    }
+
     private fun launchDialog(dialog: DIALOGS) {
-
-
         val builder = AlertDialog.Builder(this)
         builder.setTitle("")
         builder.setMessage("")
         builder.setView(getLayout(dialog))
         builder.setCancelable(false)
-
-        builder.setPositiveButton("Complete") { d, which ->
-
-            actOnAction(dialog)
-        }
-
-        builder.setNegativeButton("Cancel") { d, which ->
-
-        }
-
-
+        builder.setPositiveButton("Complete") { d, which -> actOnAction(dialog) }
+        builder.setNegativeButton("Cancel") { d, which -> }
         builder.show()
 
 
@@ -238,95 +231,70 @@ class MainActivity : AppCompatActivity(), TokenCallListener {
     private fun actOnAction(dialog: DIALOGS?) {
 
         when (dialog) {
+
             DIALOGS.SEARCHPERSON -> {
                 searchPerson(edtIdNumber?.text.toString())
-
             }
+
             DIALOGS.VERIFYPERSON -> {
-
-
                 verifyPerson(
                     VerifyPersonodel(
                         id_number = edtIdNumber?.text.toString(),
                         first_name = edtFristName?.text.toString(),
                         surname = edtSirName?.text.toString(),
                         other_name = edtOtherName?.text.toString(),
-                        phone_number = phone_number?.text.toString(),
-                        gender = gender?.text.toString(),
-                        citizenship = citizenship?.text.toString(),
-                        date_of_birth = date_of_birth?.text.toString()
+                        phone_number = edtPhoneNumber?.text.toString(),
+                        gender = edtGender?.text.toString(),
+                        citizenship = edtCitizenship?.text.toString(),
+                        date_of_birth = edtDateOfBirth?.text.toString()
                     )
                 )
 
             }
+
             DIALOGS.SEARCHNCACONTRACTORID -> {
-
                 searchNcaContractorById(edtNcaContractorReg?.text.toString())
-
             }
+
             DIALOGS.SEARCHNCACONTRACTORNAME -> {
-
                 searchNcaContractorByName(edtNcaContractorName?.text.toString())
-
             }
+
             DIALOGS.VERIFYNCACONTRACTOR -> {
-
-
                 verifyNcaContractor(
-                            VerifyNcaContractor(
-                                edtNcaContractorReg?.text.toString(),
-                                edtNcaContractorName?.text.toString(),
-                                edtNcaContractorTown?.text.toString(),
-                                edtNcaContractorCategory?.text.toString(),
-                                edtNcaContractorClass?.text.toString()
-                            )
-                        )
-
-
+                    VerifyNcaContractor(
+                        edtNcaContractorReg?.text.toString(),
+                        edtNcaContractorName?.text.toString(),
+                        edtNcaContractorTown?.text.toString(),
+                        edtNcaContractorCategory?.text.toString(),
+                        edtNcaContractorClass?.text.toString()
+                    )
+                )
             }
         }
     }
 
-
-    private fun showError(edt: String) {
-        Toast.makeText(this, "$edt  required", Toast.LENGTH_LONG).show()
-
-    }
-
     private fun showVerificationResponseParams(paramsResponse: List<ParamsResponse>) {
         val builder = AlertDialog.Builder(this)
-
         builder.setTitle("")
         builder.setMessage("")
         val inflater = this.layoutInflater
         val dialogView = inflater.inflate(R.layout.recycler_view, null)
         builder.setView(dialogView)
         builder.setCancelable(false)
-
         val adapter = VerificationParamsAdapter(paramsResponse)
         dialogView.recycler_view.adapter = adapter
         dialogView.recycler_view.layoutManager = LinearLayoutManager(this)
-
-
-        builder.setNegativeButton("Cancel") { d, which ->
-
-        }
-
-
+        builder.setNegativeButton("Cancel") { d, which -> }
         builder.show()
     }
 
     private fun showPersonResponseDialog(person: Person) {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("")
-        builder.setMessage("")
         val inflater = this.layoutInflater
         val dialogView = inflater.inflate(R.layout.person_response_view, null)
         builder.setView(dialogView)
         builder.setCancelable(false)
-
-
-
         dialogView.id_number.text = person.idNumber
         dialogView.date_of_issue.text = person.dateOfIssue
         dialogView.first_name.text = person.firstName
@@ -337,82 +305,58 @@ class MainActivity : AppCompatActivity(), TokenCallListener {
         dialogView.occupation.text = person.occupation
         dialogView.place_of_birth.text = person.placeOfBirth
         dialogView.place_of_live.text = person.placeOfLive
-
         dialogView.is_alive.text = person.isAlive.toString()
         dialogView.verified.text = person.verified.toString()
         dialogView.status.text = person.status
-
-
-
-
-
-        builder.setNegativeButton("Cancel") { d, which ->
-
-        }
-
-
+        builder.setNegativeButton("Cancel") { d, which -> }
         builder.show()
 
     }
 
     private fun showNcaContractorResponseDialog(ncaContractor: NcaContractor) {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("")
-        builder.setMessage("")
-
         val inflater = this.layoutInflater
         val dialogView = inflater.inflate(R.layout.nca_response_view, null)
         builder.setView(dialogView)
         builder.setCancelable(false)
-
         dialogView.registration_no.text = ncaContractor.registrationNo
         dialogView.contractor_name.text = ncaContractor.contractorName
         dialogView.town.text = ncaContractor.town
         dialogView.category.text = ncaContractor.category
         dialogView._class.text = ncaContractor._class
-
         dialogView.verified.text = ncaContractor.verified.toString()
         dialogView.status.text = ncaContractor.status
-
-
-
-
-
-
-
-        builder.setNegativeButton("Cancel") { d, which ->
-
-        }
-
-
+        builder.setNegativeButton("Cancel") { d, which -> }
         builder.show()
 
     }
 
     private fun showNcaContractorsResponseDialog(ncaContractors: List<NcaContractor>) {
         val builder = AlertDialog.Builder(this)
-
         builder.setTitle("Nca Contractors")
-        builder.setMessage("")
         val inflater = this.layoutInflater
         val dialogView = inflater.inflate(R.layout.recycler_view, null)
         builder.setView(dialogView)
         builder.setCancelable(false)
-
         val adapter = NcaParamsAdapter(ncaContractors)
         dialogView.recycler_view.adapter = adapter
         dialogView.recycler_view.layoutManager = LinearLayoutManager(this)
-
-
-        builder.setNegativeButton("Cancel") { d, which ->
-
-        }
-
-
+        builder.setNegativeButton("Cancel") { d, which -> }
         builder.show()
 
     }
 
+    private fun showError(verifyException: VerifyException) {
+
+        var errorrMessage = ""
+        var errorArray: String?
+        if (verifyException.errorMessage != null) {
+            errorrMessage = verifyException.errorMessage!!
+        }
+        errorArray = verifyException.errors?.joinToString { it -> "\'${it}\'" }
+        Toast.makeText(this, errorrMessage + "\n" + errorArray, Toast.LENGTH_LONG).show()
+
+    }
 
     private fun searchPerson(personId: String) {
         v?.getPerson(personId, object : GetUserDetailsListener {
@@ -428,11 +372,12 @@ class MainActivity : AppCompatActivity(), TokenCallListener {
 
             override fun onFailure(verifyException: VerifyException) {
                 setProgressBarVisibility(View.GONE)
-                Toast.makeText(this@MainActivity, verifyException.errorMessage, Toast.LENGTH_LONG).show()
+                showError(verifyException)
 
             }
         })
     }
+
 
 
     private fun verifyPerson(verifyPersonodel: VerifyPersonodel) {
@@ -450,11 +395,10 @@ class MainActivity : AppCompatActivity(), TokenCallListener {
 
             override fun onFailure(verifyException: VerifyException) {
                 setProgressBarVisibility(View.GONE)
-                Toast.makeText(this@MainActivity, verifyException.errorMessage, Toast.LENGTH_LONG).show()
+                showError(verifyException)
             }
         })
     }
-
 
     private fun searchNcaContractorById(contractorRegId: String) {
         v?.searchNcaContractorById(contractorRegId, object : SearchNcaContractorByIdListener {
@@ -464,9 +408,7 @@ class MainActivity : AppCompatActivity(), TokenCallListener {
             }
 
             override fun onResponse(
-                ncaContractor: NcaContractor,
-                verificationStatus: Boolean,
-                verificationMessage: String
+                ncaContractor: NcaContractor
             ) {
                 setProgressBarVisibility(View.GONE)
                 showNcaContractorResponseDialog(ncaContractor)
@@ -476,7 +418,7 @@ class MainActivity : AppCompatActivity(), TokenCallListener {
             override fun onFailure(verifyException: VerifyException) {
                 setProgressBarVisibility(View.GONE)
 
-                Toast.makeText(this@MainActivity, verifyException.errorMessage, Toast.LENGTH_LONG).show()
+                showError(verifyException)
 
             }
         })
@@ -499,12 +441,11 @@ class MainActivity : AppCompatActivity(), TokenCallListener {
             override fun onFailure(verifyException: VerifyException) {
                 setProgressBarVisibility(View.GONE)
 
-                Toast.makeText(this@MainActivity, verifyException.errorMessage, Toast.LENGTH_LONG).show()
+                showError(verifyException)
 
             }
         })
     }
-
 
     private fun verifyNcaContractor(verifyNcaContractor: VerifyNcaContractor) {
         v?.verifyNcaContractor(verifyNcaContractor, object : verifyNcaContractorListener {
@@ -522,11 +463,27 @@ class MainActivity : AppCompatActivity(), TokenCallListener {
 
             override fun onFailure(verifyException: VerifyException) {
                 setProgressBarVisibility(View.GONE)
-                Toast.makeText(this@MainActivity, verifyException.errorMessage, Toast.LENGTH_LONG).show()
+                showError(verifyException)
 
             }
         })
     }
+
+    private fun setProgressBarVisibility(visible: Int) {
+        if (progress_bar != null) {
+            progress_bar?.visibility = visible
+        }
+
+        if (visible == View.VISIBLE) {
+            window?.setFlags(
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+            )
+        } else {
+            window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        }
+    }
+
 
     enum class DIALOGS {
         SEARCHPERSON,
