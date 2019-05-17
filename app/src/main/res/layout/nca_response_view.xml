@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ /**
-  ~  * Created by Kogi Eric  on 5/17/19 8:29 AM
+  ~  * Created by Kogi Eric  on 5/17/19 1:16 PM
   ~  * Copyright (c) 2019 . All rights reserved.
-  ~  * Last modified 5/17/19 8:24 AM
+  ~  * Last modified 5/17/19 1:16 PM
   ~  */
   -->
 
@@ -109,7 +109,7 @@
 
         </LinearLayout>
 
-        <include layout="@layout/verification_status_view"/>
+    <include layout="@layout/verification_status_view" android:visibility="gone"/>
 
 
     </LinearLayout>

@@ -1,8 +1,8 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/17/19 8:29 AM
+ *  * Created by Kogi Eric  on 5/17/19 1:16 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/17/19 8:24 AM
+ *  * Last modified 5/17/19 1:16 PM
  *
  */
 
@@ -49,7 +49,7 @@ internal class Validator {
     }
 
     private fun isValidPhoneNumber(mobile: String): Boolean {
-        val regEx = "^[0-9]{9}$"
+        val regEx = "^[0-9]{10}$"
         return mobile.matches(regEx.toRegex())
     }
 
@@ -66,7 +66,7 @@ internal class Validator {
 
     fun isValidId(id_number: String): Boolean {
 
-        return id_number.trim().length > 7
+        return id_number.trim().length < 10
 
     }
 
@@ -172,6 +172,24 @@ internal class Validator {
                 )
             ) {
 
+                if (!isValidId(verifyPersonModel.id_number, nullable = true)) {
+
+                    objectVerificationModel.isValid = false
+                    objectVerificationModel.invalidField = "Id Number"
+                    objectVerificationModel.reasonInvalid =
+                        "The Entry for National Id is Invalid . Please refer to the documentation for correct implementation "
+                    return objectVerificationModel
+                }
+
+                if (!isValidPhoneNumber(verifyPersonModel.phone_number, nullable = true)) {
+
+                    objectVerificationModel.isValid = false
+                    objectVerificationModel.invalidField = "Phone Number"
+                    objectVerificationModel.reasonInvalid =
+                        "The Entry for Phone number is Invalid . Please refer to the documentation for correct implementation "
+                    return objectVerificationModel
+                }
+
                 if (!isValidGender(verifyPersonModel.gender, nullable = true)) {
 
                     objectVerificationModel.isValid = false
@@ -180,6 +198,7 @@ internal class Validator {
                         "The Entry for Gender is Invalid . Please refer to the documentation for correct implementation "
                     return objectVerificationModel
                 }
+
                 if (!isValidDateOfBirth(verifyPersonModel.date_of_birth, nullable = true)) {
 
                     objectVerificationModel.isValid = false

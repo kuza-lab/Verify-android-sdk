@@ -1,8 +1,8 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/17/19 8:29 AM
+ *  * Created by Kogi Eric  on 5/17/19 1:16 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/17/19 8:24 AM
+ *  * Last modified 5/17/19 1:16 PM
  *
  */
 
@@ -90,8 +90,8 @@ class Verify(
 
     fun getPerson(s: String?, getUserDetailsListener: GetUserDetailsListener) {
 
-        if (Validator().isNull(s)) {
-            getUserDetailsListener.onFailure(VerifyException("Id number cannot be null"))
+        if (!Validator().isValidId(s, false)) {
+            getUserDetailsListener.onFailure(VerifyException("Id number is invalid"))
             return
         }
 

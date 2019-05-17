@@ -1,8 +1,8 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/17/19 8:29 AM
+ *  * Created by Kogi Eric  on 5/17/19 1:16 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/17/19 8:24 AM
+ *  * Last modified 5/17/19 1:16 PM
  *
  */
 
@@ -359,7 +359,11 @@ class MainActivity : AppCompatActivity() {
     private fun showError(verifyException: VerifyException) {
 
         var errorrMessage = ""
-        val errorArray: String? = verifyException.errors?.joinToString { "\'${it}\'" }
+
+        var errorArray: String? = verifyException.errors?.joinToString { "\'${it}\'" }
+        if (errorArray == null || errorArray == "null") {
+            errorArray = ""
+        }
         if (verifyException.errorMessage != null) {
             errorrMessage = verifyException.errorMessage!!
         }
