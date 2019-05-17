@@ -26,7 +26,7 @@ repositories {
 
 ```java
    
-       implementation 'com.github.kuza-lab:Verifysdk:v0.0.1Alpha'
+       implementation 'com.github.kuza-lab:Verifysdk:v0.0.2Alpha'
 ```
 
 
