@@ -34,8 +34,8 @@ repositories {
 
 ```kotlin
     v = Verify.Builder(this)
-            .secretKey("tIpl3tw0agl9urNqianIAiYzPR5YnFMGriIad0qjcPq1c9HGsUuJhOkQRfZ5MuJY")
-            .consumerKey("7Jp5N68ctdAtxqruKtQtFHmgLneY3S8Cz2iOKPtF4D5s715A1XWDo3oHHlEZ4Jgf")
+            .secretKey("secret key here")
+            .consumerKey("consumer key here")
             .enviroment(Enviroment.PRODUCTION)
             .build()
      
