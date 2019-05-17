@@ -1,9 +1,17 @@
+/*
+ * *
+ *  * Created by Kogi Eric  on 5/17/19 8:29 AM
+ *  * Copyright (c) 2019 . All rights reserved.
+ *  * Last modified 5/17/19 8:24 AM
+ *
+ */
+
 import android.content.Context
-import com.kuzalab.verifysdk.ErrorUtils
-import com.kuzalab.verifysdk.Validator
-import com.kuzalab.verifysdk.data.VerifyConstants
 import com.kuzalab.verifysdk.interfaces.*
 import com.kuzalab.verifysdk.models.*
+import com.kuzalab.verifysdk.utils.ErrorUtils
+import com.kuzalab.verifysdk.utils.Validator
+import com.kuzalab.verifysdk.utils.VerifyConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -25,7 +33,7 @@ class Verify(
 
     private var token: String? = null
 
-    fun generateToken(tokenCallListener: TokenCallListener?) {
+    private fun generateToken(tokenCallListener: TokenCallListener?) {
         tokenCallListener?.onTokenCallStarted()
 
         if (!NetworkUtils.isConnected(context)) {
@@ -154,8 +162,7 @@ class Verify(
             })
 
         }
-            
-        
+
 
     }
 
@@ -182,12 +189,12 @@ class Verify(
                     if (response != null) {
                         if (response.isSuccessful) {
                             if (response.body()?.success == true && response.body()?.data != null) {
-                                verifyUserDetailsListener.onResponse(response.body()?.data!!)
+                                verifyUserDetailsListener.onResponse(response.body()?.data as List<ParamsResponse>)
                             } else {
                                 verifyUserDetailsListener.onFailure(
                                     VerifyException(
                                         response.body()?.message,
-                                        "",
+                                        response.body()?.statusName,
                                         response.body()?.errors
                                     )
                                 )
@@ -228,7 +235,7 @@ class Verify(
                     if (response != null) {
                         if (response.isSuccessful) {
                             if (response.body()?.success == true && response.body()?.data != null) {
-                                userDetailsListener.onResponse(response.body()?.data!!)
+                                userDetailsListener.onResponse(response.body()?.data as Person)
                             } else {
                                 userDetailsListener.onFailure(
                                     VerifyException(
@@ -516,6 +523,7 @@ class Verify(
                 override fun onFailure(call: Call<VerifyNcaContractorResponse>?, t: Throwable?) {
                     verifyNcaContractorListener.onFailure(VerifyException("" + t))
                 }
+
                 override fun onResponse(
                     call: Call<VerifyNcaContractorResponse>?,
                     response: Response<VerifyNcaContractorResponse>?
@@ -559,8 +567,6 @@ class Verify(
         fun enviroment(enviroment: Enviroment) = apply { this.enviroment = enviroment }
         fun consumerKey(consumerKey: String?) = apply { this.consumerKey = consumerKey }
         fun secretKey(secretKey: String) = apply { this.secretKey = secretKey }
-
-
         fun build() = Verify(context, enviroment, consumerKey, secretKey)
 
 

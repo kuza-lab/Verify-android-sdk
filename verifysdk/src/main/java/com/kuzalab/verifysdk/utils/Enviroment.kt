@@ -6,7 +6,7 @@
  *
  */
 
-enum class VerificationStatus {
-    VERIFIED,
-    NOT_VERIFIED
+enum class Enviroment {
+    SANDBOX,
+    PRODUCTION
 }

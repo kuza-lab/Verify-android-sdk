@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ /**
+  ~  * Created by Kogi Eric  on 5/17/19 8:29 AM
+  ~  * Copyright (c) 2019 . All rights reserved.
+  ~  * Last modified 5/17/19 8:24 AM
+  ~  */
+  -->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.kuzalab.veifyke">
     <uses-permission android:name="android.permission.INTERNET"/>

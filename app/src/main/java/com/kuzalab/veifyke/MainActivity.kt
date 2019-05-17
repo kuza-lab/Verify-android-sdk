@@ -1,8 +1,17 @@
+/*
+ * *
+ *  * Created by Kogi Eric  on 5/17/19 8:29 AM
+ *  * Copyright (c) 2019 . All rights reserved.
+ *  * Last modified 5/17/19 8:24 AM
+ *
+ */
+
 package com.kuzalab.veifyke
 
 
 import Enviroment
 import Verify
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.InputType
@@ -26,21 +35,21 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    var edtIdNumber: EditText? = null
-    var edtFristName: EditText? = null
-    var edtSirName: EditText? = null
-    var edtOtherName: EditText? = null
-    var edtCitizenship: EditText? = null
-    var edtDateOfBirth: EditText? = null
-    var edtGender: EditText? = null
-    var edtPhoneNumber: EditText? = null
-    var edtNcaContractorReg: EditText? = null
-    var edtNcaContractorName: EditText? = null
-    var edtNcaContractorTown: EditText? = null
-    var edtNcaContractorCategory: EditText? = null
-    var edtNcaContractorClass: EditText? = null
+    private var edtIdNumber: EditText? = null
+    private var edtFristName: EditText? = null
+    private var edtSirName: EditText? = null
+    private var edtOtherName: EditText? = null
+    private var edtCitizenship: EditText? = null
+    private var edtDateOfBirth: EditText? = null
+    private var edtGender: EditText? = null
+    private var edtPhoneNumber: EditText? = null
+    private var edtNcaContractorReg: EditText? = null
+    private var edtNcaContractorName: EditText? = null
+    private var edtNcaContractorTown: EditText? = null
+    private var edtNcaContractorCategory: EditText? = null
+    private var edtNcaContractorClass: EditText? = null
 
-    var v: Verify? = null
+    private var v: Verify? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -221,8 +230,8 @@ class MainActivity : AppCompatActivity() {
         builder.setMessage("")
         builder.setView(getLayout(dialog))
         builder.setCancelable(false)
-        builder.setPositiveButton("Complete") { d, which -> actOnAction(dialog) }
-        builder.setNegativeButton("Cancel") { d, which -> }
+        builder.setPositiveButton("Complete") { _, _ -> actOnAction(dialog) }
+        builder.setNegativeButton("Cancel") { _, _ -> }
         builder.show()
 
 
@@ -274,10 +283,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("InflateParams")
     private fun showVerificationResponseParams(paramsResponse: List<ParamsResponse>) {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("")
-        builder.setMessage("")
+        builder.setTitle("Verification")
+
         val inflater = this.layoutInflater
         val dialogView = inflater.inflate(R.layout.recycler_view, null)
         builder.setView(dialogView)
@@ -285,7 +295,7 @@ class MainActivity : AppCompatActivity() {
         val adapter = VerificationParamsAdapter(paramsResponse)
         dialogView.recycler_view.adapter = adapter
         dialogView.recycler_view.layoutManager = LinearLayoutManager(this)
-        builder.setNegativeButton("Cancel") { d, which -> }
+        builder.setNegativeButton("Cancel") { _, _ -> }
         builder.show()
     }
 
@@ -308,7 +318,7 @@ class MainActivity : AppCompatActivity() {
         dialogView.is_alive.text = person.isAlive.toString()
         dialogView.verified.text = person.verified.toString()
         dialogView.status.text = person.status
-        builder.setNegativeButton("Cancel") { d, which -> }
+        builder.setNegativeButton("Cancel") { _, _ -> }
         builder.show()
 
     }
@@ -326,7 +336,7 @@ class MainActivity : AppCompatActivity() {
         dialogView._class.text = ncaContractor._class
         dialogView.verified.text = ncaContractor.verified.toString()
         dialogView.status.text = ncaContractor.status
-        builder.setNegativeButton("Cancel") { d, which -> }
+        builder.setNegativeButton("Cancel") { _, _ -> }
         builder.show()
 
     }
@@ -341,7 +351,7 @@ class MainActivity : AppCompatActivity() {
         val adapter = NcaParamsAdapter(ncaContractors)
         dialogView.recycler_view.adapter = adapter
         dialogView.recycler_view.layoutManager = LinearLayoutManager(this)
-        builder.setNegativeButton("Cancel") { d, which -> }
+        builder.setNegativeButton("Cancel") { _, _ -> }
         builder.show()
 
     }
@@ -349,11 +359,10 @@ class MainActivity : AppCompatActivity() {
     private fun showError(verifyException: VerifyException) {
 
         var errorrMessage = ""
-        var errorArray: String?
+        val errorArray: String? = verifyException.errors?.joinToString { "\'${it}\'" }
         if (verifyException.errorMessage != null) {
             errorrMessage = verifyException.errorMessage!!
         }
-        errorArray = verifyException.errors?.joinToString { it -> "\'${it}\'" }
         Toast.makeText(this, errorrMessage + "\n" + errorArray, Toast.LENGTH_LONG).show()
 
     }
@@ -377,7 +386,6 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-
 
 
     private fun verifyPerson(verifyPersonodel: VerifyPersonodel) {

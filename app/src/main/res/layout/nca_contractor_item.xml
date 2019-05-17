@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ /**
+  ~  * Created by Kogi Eric  on 5/17/19 8:29 AM
+  ~  * Copyright (c) 2019 . All rights reserved.
+  ~  * Last modified 5/17/19 8:24 AM
+  ~  */
+  -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_margin="6dp"
+              android:padding="6dp"
               android:layout_width="match_parent"
               android:layout_height="wrap_content">
+    <View android:layout_width="match_parent"
+          android:background="@color/colorAccent"
+          android:layout_height="2dp"/>
 
     <LinearLayout
 
@@ -11,13 +23,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <TextView
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:text="Registration No"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"/>
         <TextView
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:id="@+id/registration_no"
                 android:layout_weight="1"
                 android:layout_width="0dp"
@@ -30,13 +40,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <TextView
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:text="Contractor Name"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"/>
         <TextView
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:id="@+id/contractor_name"
                 android:layout_weight="1"
                 android:layout_width="0dp"
@@ -49,13 +57,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <TextView
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:text="Town"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"/>
         <TextView
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
 
                 android:id="@+id/town"
                 android:layout_weight="1"
@@ -69,13 +75,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <TextView
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:text="Category"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"/>
         <TextView
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
 
                 android:id="@+id/category"
                 android:layout_weight="1"
@@ -89,13 +93,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <TextView
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:text="Class"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"/>
         <TextView
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
 
                 android:id="@+id/_class"
                 android:layout_weight="1"

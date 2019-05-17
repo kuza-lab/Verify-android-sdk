@@ -1,13 +1,21 @@
-package com.kuzalab.verifysdk
+/*
+ * *
+ *  * Created by Kogi Eric  on 5/17/19 8:29 AM
+ *  * Copyright (c) 2019 . All rights reserved.
+ *  * Last modified 5/17/19 8:24 AM
+ *
+ */
+
+package com.kuzalab.verifysdk.utils
 
 import android.util.Patterns
-import com.kuzalab.verifysdk.data.VerifyConstants
 import com.kuzalab.verifysdk.models.ObjectVerificationModel
 import com.kuzalab.verifysdk.models.VerifyNcaContractor
 import com.kuzalab.verifysdk.models.VerifyPersonodel
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 internal class Validator {
 

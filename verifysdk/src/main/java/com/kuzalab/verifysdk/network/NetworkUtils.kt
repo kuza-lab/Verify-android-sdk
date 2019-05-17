@@ -1,3 +1,11 @@
+/*
+ * *
+ *  * Created by Kogi Eric  on 5/17/19 8:29 AM
+ *  * Copyright (c) 2019 . All rights reserved.
+ *  * Last modified 5/17/19 8:27 AM
+ *
+ */
+
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
@@ -10,7 +18,6 @@ import java.sql.DriverManager.println
 
 class NetworkUtils {
     companion object {
-        lateinit var verify: Verify
 
         private fun getNetworkInfo(context: Context): NetworkInfo? {
             return try {

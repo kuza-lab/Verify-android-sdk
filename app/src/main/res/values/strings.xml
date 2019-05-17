@@ -1,3 +1,16 @@
+<!--
+  ~ /**
+  ~  * Created by Kogi Eric  on 5/17/19 8:29 AM
+  ~  * Copyright (c) 2019 . All rights reserved.
+  ~  * Last modified 5/17/19 8:24 AM
+  ~  */
+  -->
+
 <resources>
     <string name="app_name">VeifyKe</string>
+    <string name="contractor">Contractor</string>
+    <string name="registration_no">Registration No</string>
+    <string name="contractor_name">Contractor Name</string>
+    <string name="town">Town</string>
+    <string name="category">Category</string>
 </resources>

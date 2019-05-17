@@ -1,33 +1,28 @@
-package com.dev.agenda.Adapters
+/*
+ * *
+ *  * Created by Kogi Eric  on 5/17/19 8:29 AM
+ *  * Copyright (c) 2019 . All rights reserved.
+ *  * Last modified 5/17/19 8:24 AM
+ *
+ */
+
+package com.kuzalab.veifyke
 
 
 import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.kuzalab.veifyke.R
 
 
 class ParamsItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
 
-    var itemVew: View
+    var itemVew: View = itemView
 
-    var parameter_name: TextView
-    var parameter_value: TextView
-    var is_verified: TextView
-    var status: TextView
-
-
-    init {
-        this.itemVew = itemView
-
-        parameter_name = itemView.findViewById(R.id.parameter_name)
-        parameter_value = itemView.findViewById(R.id.parameter_value)
-        is_verified = itemView.findViewById(R.id.is_verified)
-        status = itemView.findViewById(R.id.status)
-
-
-    }
+    var parameter_name: TextView = itemView.findViewById(R.id.parameter_name)
+    var parameter_value: TextView = itemView.findViewById(R.id.parameter_value)
+    var is_verified: TextView = itemView.findViewById(R.id.is_verified)
+    var status: TextView = itemView.findViewById(R.id.status)
 
 
 }
