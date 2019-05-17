@@ -1,8 +1,8 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/17/19 8:29 AM
+ *  * Created by Kogi Eric  on 5/17/19 4:11 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/17/19 8:24 AM
+ *  * Last modified 5/17/19 4:09 PM
  *
  */
 
@@ -27,7 +27,7 @@ interface EndPoints {
 
 
     @POST("userverification")
-    fun verifyPerson(@Query("id_number") id: String, @Body verifyPersonodel: VerifyPersonodel): Call<VerifyPersonResponse>
+    fun verifyPerson(@Query("id_number") id: String, @Body verifyPersonModel: VerifyPersonModel): Call<VerifyPersonResponse>
 
 
     @GET("ncadetailsbyname")
