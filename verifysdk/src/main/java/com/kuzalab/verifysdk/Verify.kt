@@ -1,8 +1,8 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/20/19 5:42 PM
+ *  * Created by Kogi Eric  on 5/20/19 6:30 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/20/19 5:41 PM
+ *  * Last modified 5/20/19 6:30 PM
  *
  */
 
@@ -11,6 +11,7 @@ import com.kuzalab.verifysdk.interfaces.*
 import com.kuzalab.verifysdk.models.VerifyNcaContractor
 import com.kuzalab.verifysdk.models.VerifyPersonModel
 import com.kuzalab.verifysdk.utils.CALL_TAGS
+import com.kuzalab.verifysdk.utils.Validator
 import org.jetbrains.annotations.TestOnly
 
 class Verify(
@@ -28,8 +29,10 @@ class Verify(
 
 
     @TestOnly
-    fun cancel(tag: String) {
-        v.cancel(tag)
+    fun cancel(tag: String?) {
+        if (!Validator().isNull(tag)) {
+            v.cancel(tag)
+        }
     }
 
 

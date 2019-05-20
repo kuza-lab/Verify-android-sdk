@@ -1,8 +1,8 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/20/19 5:42 PM
+ *  * Created by Kogi Eric  on 5/20/19 6:30 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/20/19 5:41 PM
+ *  * Last modified 5/20/19 6:30 PM
  *
  */
 
@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity() {
     private var v: Verify? = null
 
 
+    private var tag: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +66,8 @@ class MainActivity : AppCompatActivity() {
         btn_verify_person.setOnClickListener { launchDialog(DIALOGS.VERIFYPERSON) }
         btn_search_contactor_id.setOnClickListener { launchDialog(DIALOGS.SEARCHNCACONTRACTORID) }
         btn_search_contractor_name.setOnClickListener { launchDialog(DIALOGS.SEARCHNCACONTRACTORNAME) }
-        btn_verify_contractor.setOnClickListener { launchDialog(DIALOGS.VERIFYNCACONTRACTOR) }
+        //btn_verify_contractor.setOnClickListener { launchDialog(DIALOGS.VERIFYNCACONTRACTOR) }
+        btn_verify_contractor.setOnClickListener { v?.cancel(tag) }
 
     }
 
@@ -430,7 +432,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun searchPerson(personId: String) {
 
-        val tag = v?.getPerson(personId, object : GetUserDetailsListener {
+        tag = v?.getPerson(personId, object : GetUserDetailsListener {
             override fun onCallStarted() {
 
                 setProgressBarVisibility(View.VISIBLE)
@@ -549,10 +551,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (visible == View.VISIBLE) {
-            window?.setFlags(
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-            )
+//            window?.setFlags(
+//                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+//                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+//            )
         } else {
             window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
         }

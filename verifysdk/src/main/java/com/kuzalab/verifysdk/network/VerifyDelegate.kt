@@ -1,17 +1,16 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/20/19 5:42 PM
+ *  * Created by Kogi Eric  on 5/20/19 6:30 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/20/19 5:41 PM
+ *  * Last modified 5/20/19 6:30 PM
  *
  */
 
 import android.content.Context
 import com.kuzalab.verifysdk.interfaces.*
 import com.kuzalab.verifysdk.models.*
-import com.kuzalab.verifysdk.network.VerifyCall
-import com.kuzalab.verifysdk.utils.CALL_TAGS
 import com.kuzalab.verifysdk.utils.ErrorUtils
+import com.kuzalab.verifysdk.utils.FailureUtils
 import com.kuzalab.verifysdk.utils.Validator
 import com.kuzalab.verifysdk.utils.VerifyConstants
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +20,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-internal open class VerifyCalls(
+internal open class VerifyDelegate(
 
     private var context: Context,
     private var enviroment: Enviroment = Enviroment.SANDBOX,
@@ -32,46 +31,9 @@ internal open class VerifyCalls(
 ) {
 
 
-    val VERIFY_DATE_FORMAT = VerifyConstants().VERIFY_DATE_FORMAT
-    val VERIFY_GENDER_ARRAY = VerifyConstants().VERIFY_GENDER_ARRAY
-
-    var callSearchUserResponse: Call<SearchUserResponse>? = null
-    var callVerifyPersonResponse: Call<VerifyPersonResponse>? = null
-    var callSearchNcaContractorResponse: Call<SearchNcaContractorResponse>? = null
-    var callSearchNcaContractorsResponse: Call<SearchNcaContractorsResponse>? = null
-    var callVerifyNcaContractorResponse: Call<VerifyNcaContractorResponse>? = null
-
-    fun cancel(tag: String) {
-
-        when (tag) {
-            CALL_TAGS.SEARCH_PERSON.name -> {
-                cancel(callSearchUserResponse)
-            }
-            CALL_TAGS.VERIFY_PERSON.name -> {
-                cancel(callVerifyPersonResponse)
-            }
-            CALL_TAGS.SEARCH_NCA_ID.name -> {
-                cancel(callSearchNcaContractorResponse)
-            }
-            CALL_TAGS.SEARCH_NCA_NAME.name -> {
-                cancel(callSearchNcaContractorsResponse)
-            }
-            CALL_TAGS.VERIFY_NCA.name -> {
-                cancel(callVerifyNcaContractorResponse)
-            }
-        }
-    }
-
-    private fun <T> cancel(call: Call<T>?) {
-        if (call != null && call.isExecuted && !call.isCanceled) {
-            call.cancel()
-        }
-    }
-
-
     private var token: String? = null
 
-    private fun generateToken(tokenCallListener: TokenCallListener?) {
+    internal fun generateToken(tokenCallListener: TokenCallListener?) {
         tokenCallListener?.onTokenCallStarted()
 
         if (!NetworkUtils.isConnected(context)) {
@@ -92,7 +54,8 @@ internal open class VerifyCalls(
                 val call = RequestService.getService(consumerKey!!, secretKey!!, getBaseUrl()).generateToken()
                 call.enqueue(object : Callback<AuthToken> {
                     override fun onFailure(call: Call<AuthToken>?, t: Throwable?) {
-                        tokenCallListener?.onTokenCallFailed(VerifyException("" + t))
+                        tokenCallListener?.onTokenCallFailed(FailureUtils().parseError(call, t))
+
 
                     }
 
@@ -128,90 +91,14 @@ internal open class VerifyCalls(
             }
 
         } else {
-            tokenCallListener?.onTokenCallFailed(VerifyException("Error Authentication App. Consumer Key or Secret Key is invalid or null"))
+            tokenCallListener?.onTokenCallFailed(VerifyException("Error Authenticating App, \n Consumer Key or Secret Key is invalid or null"))
 
         }
 
 
     }
 
-    fun getPerson(s: String?, getUserDetailsListener: GetUserDetailsListener): VerifyCall<SearchUserResponse>? {
-
-        if (!Validator().isValidId(s, false)) {
-            getUserDetailsListener.onFailure(VerifyException("Id number is invalid"))
-            return null
-        }
-
-
-        if (token != null) {
-            callSearchUserResponse = loadPerson(s!!, getUserDetailsListener)
-
-
-        } else {
-            generateToken(object : TokenCallListener {
-                override fun onTokenCallStarted() {
-                    getUserDetailsListener.onCallStarted()
-
-                }
-
-                override fun onTokenRecieved(token: Token) {
-                    callSearchUserResponse = loadPerson(s!!, getUserDetailsListener)
-
-                }
-
-                override fun onTokenCallFailed(verifyException: VerifyException) {
-                    getUserDetailsListener.onFailure(verifyException)
-
-                }
-            })
-
-        }
-
-        return VerifyCall(callSearchUserResponse)
-
-    }
-
-
-    fun verifyPerson(verifyPersonModel: VerifyPersonModel, verifyUserDetailsListener: VerifyUserDetailsListener)
-            : VerifyCall<VerifyPersonResponse>? {
-
-
-        val objectVerification = Validator().validatePersonObject(verifyPersonModel)
-        if (!objectVerification.isValid) {
-            verifyUserDetailsListener.onFailure(VerifyException(objectVerification.reasonInvalid))
-            return null
-        }
-
-        if (token != null) {
-
-            callVerifyPersonResponse = loadVerifyPerson(verifyPersonModel, verifyUserDetailsListener)
-
-
-        } else {
-            generateToken(object : TokenCallListener {
-                override fun onTokenCallStarted() {
-                    verifyUserDetailsListener.onCallStarted()
-
-                }
-
-                override fun onTokenRecieved(token: Token) {
-                    callVerifyPersonResponse = loadVerifyPerson(verifyPersonModel, verifyUserDetailsListener)
-
-                }
-
-                override fun onTokenCallFailed(verifyException: VerifyException) {
-                    verifyUserDetailsListener.onFailure(verifyException)
-
-                }
-            })
-
-        }
-
-
-        return VerifyCall(callVerifyPersonResponse)
-    }
-
-    private fun loadVerifyPerson(
+    internal fun loadVerifyPerson(
         verifyPersonModel: VerifyPersonModel,
         verifyUserDetailsListener: VerifyUserDetailsListener
     ): Call<VerifyPersonResponse>? {
@@ -227,7 +114,7 @@ internal open class VerifyCalls(
         GlobalScope.launch(context = Dispatchers.Main) {
             call.enqueue(object : Callback<VerifyPersonResponse> {
                 override fun onFailure(call: Call<VerifyPersonResponse>?, t: Throwable?) {
-                    verifyUserDetailsListener.onFailure(VerifyException("" + t))
+                    verifyUserDetailsListener.onFailure(FailureUtils().parseError(call, t))
 
                 }
 
@@ -262,7 +149,7 @@ internal open class VerifyCalls(
         return call
     }
 
-    private fun loadPerson(id: String, userDetailsListener: GetUserDetailsListener): Call<SearchUserResponse>? {
+    internal fun loadPerson(id: String, userDetailsListener: GetUserDetailsListener): Call<SearchUserResponse>? {
         userDetailsListener.onCallStarted()
 
         if (!NetworkUtils.isConnected(context)) {
@@ -275,7 +162,9 @@ internal open class VerifyCalls(
         GlobalScope.launch(context = Dispatchers.Main) {
             call.enqueue(object : Callback<SearchUserResponse> {
                 override fun onFailure(call: Call<SearchUserResponse>?, t: Throwable?) {
-                    userDetailsListener.onFailure(VerifyException("" + t))
+
+                    userDetailsListener.onFailure(FailureUtils().parseError(call, t))
+
 
                 }
 
@@ -327,44 +216,7 @@ internal open class VerifyCalls(
         return baseUrls
     }
 
-    fun searchNcaContractorById(s: String, searchNcaContractorByIdListener: SearchNcaContractorByIdListener)
-            : VerifyCall<SearchNcaContractorResponse>? {
-
-
-        if (Validator().isNull(s)) {
-            searchNcaContractorByIdListener.onFailure(VerifyException("Registration number must be set"))
-            return null
-        }
-        if (token != null) {
-
-            callSearchNcaContractorResponse = loadNcaContractor(s, searchNcaContractorByIdListener)
-
-
-        } else {
-            generateToken(object : TokenCallListener {
-                override fun onTokenCallStarted() {
-                    searchNcaContractorByIdListener.onCallStarted()
-
-                }
-
-                override fun onTokenRecieved(token: Token) {
-                    callSearchNcaContractorResponse = loadNcaContractor(s, searchNcaContractorByIdListener)
-
-                }
-
-                override fun onTokenCallFailed(verifyException: VerifyException) {
-                    searchNcaContractorByIdListener.onFailure(verifyException)
-
-                }
-            })
-
-        }
-
-        return VerifyCall(callSearchNcaContractorResponse)
-
-    }
-
-    private fun loadNcaContractor(
+    internal fun loadNcaContractor(
         s: String,
         searchNcaContractorByIdListener: SearchNcaContractorByIdListener
     ): Call<SearchNcaContractorResponse>? {
@@ -379,7 +231,7 @@ internal open class VerifyCalls(
         GlobalScope.launch(context = Dispatchers.Main) {
             call.enqueue(object : Callback<SearchNcaContractorResponse> {
                 override fun onFailure(call: Call<SearchNcaContractorResponse>?, t: Throwable?) {
-                    searchNcaContractorByIdListener.onFailure(VerifyException("" + t?.message))
+                    searchNcaContractorByIdListener.onFailure(FailureUtils().parseError(call, t))
 
                 }
 
@@ -434,8 +286,10 @@ internal open class VerifyCalls(
 
     }
 
-    private fun loadNcaContractors(s: String, searchNcaContractorByNameListener: SearchNcaContractorByNameListener):
-            Call<SearchNcaContractorsResponse>? {
+    internal fun loadNcaContractors(
+        s: String,
+        searchNcaContractorByNameListener: SearchNcaContractorByNameListener
+    ): Call<SearchNcaContractorsResponse>? {
         searchNcaContractorByNameListener.onCallStarted()
 
         if (!NetworkUtils.isConnected(context)) {
@@ -448,7 +302,7 @@ internal open class VerifyCalls(
             call.enqueue(object : Callback<SearchNcaContractorsResponse> {
                 override fun onFailure(call: Call<SearchNcaContractorsResponse>?, t: Throwable?) {
 
-                    searchNcaContractorByNameListener.onFailure(VerifyException("" + t?.message))
+                    searchNcaContractorByNameListener.onFailure(FailureUtils().parseError(call, t))
 
                 }
 
@@ -490,92 +344,7 @@ internal open class VerifyCalls(
 
     }
 
-
-    fun searchNcaContractorByName(s: String?, searchNcaContractorByNameListener: SearchNcaContractorByNameListener)
-            : VerifyCall<SearchNcaContractorsResponse>? {
-        if (Validator().isNull(s)) {
-            searchNcaContractorByNameListener.onFailure(VerifyException("Name cannot be null"))
-            return null
-        }
-
-
-        if (token != null) {
-
-            callSearchNcaContractorsResponse = loadNcaContractors(s!!, searchNcaContractorByNameListener)
-
-
-        } else {
-            generateToken(object : TokenCallListener {
-                override fun onTokenCallStarted() {
-                    searchNcaContractorByNameListener.onCallStarted()
-
-                }
-
-                override fun onTokenRecieved(token: Token) {
-                    callSearchNcaContractorsResponse = loadNcaContractors(s!!, searchNcaContractorByNameListener)
-
-                }
-
-                override fun onTokenCallFailed(verifyException: VerifyException) {
-                    searchNcaContractorByNameListener.onFailure(verifyException)
-
-                }
-            })
-
-        }
-
-        return VerifyCall(callSearchNcaContractorsResponse)
-
-
-    }
-
-    fun verifyNcaContractor(
-        verifyNcaContractor: VerifyNcaContractor, VerifyNcaContractorListener: VerifyNcaContractorListener
-    ): VerifyCall<VerifyNcaContractorResponse>? {
-
-
-        val objectVerificationModel = Validator().validateNcaObject(verifyNcaContractor)
-
-        if (!objectVerificationModel.isValid) {
-            VerifyNcaContractorListener.onFailure(VerifyException(objectVerificationModel.reasonInvalid))
-            return null
-        }
-
-
-
-
-        if (token != null) {
-
-            callVerifyNcaContractorResponse = loadverifyNcaContractor(verifyNcaContractor, VerifyNcaContractorListener)
-
-
-        } else {
-            generateToken(object : TokenCallListener {
-                override fun onTokenCallStarted() {
-                    VerifyNcaContractorListener.onCallStarted()
-
-                }
-
-                override fun onTokenRecieved(token: Token) {
-                    callVerifyNcaContractorResponse =
-                        loadverifyNcaContractor(verifyNcaContractor, VerifyNcaContractorListener)
-
-                }
-
-                override fun onTokenCallFailed(verifyException: VerifyException) {
-                    VerifyNcaContractorListener.onFailure(verifyException)
-
-                }
-            })
-
-        }
-
-
-        return VerifyCall(callVerifyNcaContractorResponse)
-
-    }
-
-    private fun loadverifyNcaContractor(
+    internal fun loadverifyNcaContractor(
         verifyNcaContractor: VerifyNcaContractor, VerifyNcaContractorListener: VerifyNcaContractorListener
     ): Call<VerifyNcaContractorResponse>? {
         VerifyNcaContractorListener.onCallStarted()
@@ -590,7 +359,7 @@ internal open class VerifyCalls(
         GlobalScope.launch(context = Dispatchers.Main) {
             call.enqueue(object : Callback<VerifyNcaContractorResponse> {
                 override fun onFailure(call: Call<VerifyNcaContractorResponse>?, t: Throwable?) {
-                    VerifyNcaContractorListener.onFailure(VerifyException("" + t))
+                    VerifyNcaContractorListener.onFailure(FailureUtils().parseError(call, t))
                 }
 
                 override fun onResponse(
