@@ -1,8 +1,8 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/20/19 6:30 PM
+ *  * Created by Kogi Eric  on 5/20/19 10:23 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/20/19 6:30 PM
+ *  * Last modified 5/20/19 10:21 PM
  *
  */
 
@@ -23,7 +23,7 @@ import retrofit2.Response
 internal open class VerifyDelegate(
 
     private var context: Context,
-    private var enviroment: Enviroment = Enviroment.SANDBOX,
+    private var environment: Environment = Environment.SANDBOX,
     private var consumerKey: String? = null,
     private var secretKey: String? = null
 
@@ -40,11 +40,11 @@ internal open class VerifyDelegate(
             tokenCallListener?.onTokenCallFailed(VerifyException("No internet connection"))
             return
         }
-        if (enviroment == null) {
-            enviroment = Enviroment.SANDBOX
+        if (environment == null) {
+            environment = Environment.SANDBOX
         }
 
-        if (enviroment == Enviroment.SANDBOX) {
+        if (environment == Environment.SANDBOX) {
             consumerKey = VerifyConstants().consumerKey
             secretKey = VerifyConstants().consumerSecret
         }
@@ -203,12 +203,12 @@ internal open class VerifyDelegate(
     private fun getBaseUrl(): String {
 
         var baseUrls = BaseUrls().LIVE
-        when (enviroment) {
-            Enviroment.PRODUCTION -> {
+        when (environment) {
+            Environment.PRODUCTION -> {
                 baseUrls = BaseUrls().LIVE
 
             }
-            Enviroment.SANDBOX -> {
+            Environment.SANDBOX -> {
                 baseUrls = BaseUrls().SANDBOX
 
             }
@@ -374,7 +374,7 @@ internal open class VerifyDelegate(
                                 VerifyNcaContractorListener.onFailure(
                                     VerifyException(
                                         response.body()?.message,
-                                        "",
+                                        response.body()?.message,
                                         response.body()?.errors
                                     )
                                 )

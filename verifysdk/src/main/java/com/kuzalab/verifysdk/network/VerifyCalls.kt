@@ -1,8 +1,8 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/20/19 6:30 PM
+ *  * Created by Kogi Eric  on 5/20/19 10:23 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/20/19 6:30 PM
+ *  * Last modified 5/20/19 10:21 PM
  *
  */
 
@@ -17,7 +17,7 @@ import retrofit2.Call
 internal open class VerifyCalls(
 
     context: Context,
-    enviroment: Enviroment = Enviroment.SANDBOX,
+    enviroment: Environment = Environment.SANDBOX,
     consumerKey: String? = null,
     secretKey: String? = null
 

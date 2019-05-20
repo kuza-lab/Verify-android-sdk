@@ -1,15 +1,15 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/20/19 6:30 PM
+ *  * Created by Kogi Eric  on 5/20/19 10:23 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/20/19 6:30 PM
+ *  * Last modified 5/20/19 10:21 PM
  *
  */
 
 package com.kuzalab.veifyke
 
 
-import Enviroment
+import Environment
 import Verify
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
@@ -96,20 +96,20 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun setSandboxAsEnviroment() {
-        initVerify(environment = Enviroment.SANDBOX)
+        initVerify(environment = Environment.SANDBOX)
     }
 
     private fun setProductionAsEnviroment(consumerKey: String?, secretKey: String?) {
-        initVerify(consumerKey = consumerKey, secretKey = secretKey, environment = Enviroment.PRODUCTION)
+        initVerify(consumerKey = consumerKey, secretKey = secretKey, environment = Environment.PRODUCTION)
     }
 
     @SuppressLint("SetTextI18n")
-    private fun initVerify(consumerKey: String? = null, secretKey: String? = null, environment: Enviroment) {
+    private fun initVerify(consumerKey: String? = null, secretKey: String? = null, environment: Environment) {
         txt_environment.text = "Current Environment \n${environment.name}"
         v = Verify.Builder(this)
             .secretKey(secretKey)
             .consumerKey(consumerKey)
-            .enviroment(environment)
+            .environment(environment)
             .build()
 
     }

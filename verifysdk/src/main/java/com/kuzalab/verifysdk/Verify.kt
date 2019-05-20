@@ -1,8 +1,8 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/20/19 6:30 PM
+ *  * Created by Kogi Eric  on 5/20/19 10:23 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/20/19 6:30 PM
+ *  * Last modified 5/20/19 10:23 PM
  *
  */
 
@@ -17,13 +17,13 @@ import org.jetbrains.annotations.TestOnly
 class Verify(
 
     context: Context,
-    enviroment: Enviroment = Enviroment.SANDBOX,
+    environment: Environment = Environment.SANDBOX,
     consumerKey: String? = null,
     secretKey: String? = null
 
 
 ) {
-    private val v: VerifyCalls = VerifyCalls(context, enviroment, consumerKey, secretKey)
+    private val v: VerifyCalls = VerifyCalls(context, environment, consumerKey, secretKey)
     val VERIFY_GENDER_ARRAY = v.VERIFY_GENDER_ARRAY
     val VERIFY_DATE_FORMAT: String? = v.VERIFY_DATE_FORMAT
 
@@ -77,14 +77,14 @@ class Verify(
 
     data class Builder(
         var context: Context,
-        var enviroment: Enviroment = Enviroment.PRODUCTION,
+        var environment: Environment = Environment.PRODUCTION,
         var consumerKey: String? = null,
         var secretKey: String? = null
     ) {
 
-        fun enviroment(enviroment: Enviroment) = apply {
+        fun environment(environment: Environment) = apply {
 
-            this.enviroment = enviroment
+            this.environment = environment
 
         }
 
@@ -98,7 +98,8 @@ class Verify(
 
 
         }
-        fun build() = Verify(context, enviroment, consumerKey, secretKey)
+
+        fun build() = Verify(context, environment, consumerKey, secretKey)
 
 
     }
