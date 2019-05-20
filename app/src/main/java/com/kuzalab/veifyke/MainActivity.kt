@@ -1,8 +1,8 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/17/19 1:16 PM
+ *  * Created by Kogi Eric  on 5/17/19 4:11 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/17/19 1:16 PM
+ *  * Last modified 5/17/19 4:10 PM
  *
  */
 
@@ -61,6 +61,12 @@ class MainActivity : AppCompatActivity() {
             .consumerKey("7Jp5N68ctdAtxqruKtQtFHmgLneY3S8Cz2iOKPtF4D5s715A1XWDo3oHHlEZ4Jgf")
             .enviroment(Enviroment.PRODUCTION)
             .build()
+
+
+
+
+
+
 
         setProgressBarVisibility(View.GONE)
         btn_search_person.setOnClickListener { launchDialog(DIALOGS.SEARCHPERSON) }
@@ -196,7 +202,7 @@ class MainActivity : AppCompatActivity() {
         lateinit var dialog: AlertDialog
         val array = v?.VERIFY_GENDER_ARRAY
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Choose a edtGender.")
+        builder.setTitle("Choose a Gender.")
         builder.setSingleChoiceItems(array, -1) { _, which ->
             edtGender?.setText(array!![which])
             dialog.dismiss()
@@ -247,7 +253,7 @@ class MainActivity : AppCompatActivity() {
 
             DIALOGS.VERIFYPERSON -> {
                 verifyPerson(
-                    VerifyPersonodel(
+                    VerifyPersonModel(
                         id_number = edtIdNumber?.text.toString(),
                         first_name = edtFristName?.text.toString(),
                         surname = edtSirName?.text.toString(),
@@ -272,11 +278,11 @@ class MainActivity : AppCompatActivity() {
             DIALOGS.VERIFYNCACONTRACTOR -> {
                 verifyNcaContractor(
                     VerifyNcaContractor(
-                        edtNcaContractorReg?.text.toString(),
-                        edtNcaContractorName?.text.toString(),
-                        edtNcaContractorTown?.text.toString(),
-                        edtNcaContractorCategory?.text.toString(),
-                        edtNcaContractorClass?.text.toString()
+                        registration_no = edtNcaContractorReg?.text.toString(),
+                        contractor_name = edtNcaContractorName?.text.toString(),
+                        town = edtNcaContractorTown?.text.toString(),
+                        category = edtNcaContractorCategory?.text.toString(),
+                        contractor_class = edtNcaContractorClass?.text.toString()
                     )
                 )
             }
@@ -392,8 +398,8 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun verifyPerson(verifyPersonodel: VerifyPersonodel) {
-        v?.verifyPerson(verifyPersonodel, object : VerifyUserDetailsListener {
+    private fun verifyPerson(verifyPersonModel: VerifyPersonModel) {
+        v?.verifyPerson(verifyPersonModel, object : VerifyUserDetailsListener {
             override fun onCallStarted() {
                 setProgressBarVisibility(View.VISIBLE)
 
@@ -460,7 +466,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun verifyNcaContractor(verifyNcaContractor: VerifyNcaContractor) {
-        v?.verifyNcaContractor(verifyNcaContractor, object : verifyNcaContractorListener {
+        v?.verifyNcaContractor(verifyNcaContractor, object : VerifyNcaContractorListener {
             override fun onCallStarted() {
                 setProgressBarVisibility(View.VISIBLE)
 

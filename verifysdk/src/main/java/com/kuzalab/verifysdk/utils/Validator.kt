@@ -1,8 +1,8 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/17/19 1:16 PM
+ *  * Created by Kogi Eric  on 5/17/19 4:11 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/17/19 1:16 PM
+ *  * Last modified 5/17/19 4:09 PM
  *
  */
 
@@ -11,7 +11,7 @@ package com.kuzalab.verifysdk.utils
 import android.util.Patterns
 import com.kuzalab.verifysdk.models.ObjectVerificationModel
 import com.kuzalab.verifysdk.models.VerifyNcaContractor
-import com.kuzalab.verifysdk.models.VerifyPersonodel
+import com.kuzalab.verifysdk.models.VerifyPersonModel
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -139,7 +139,7 @@ internal class Validator {
     }
 
 
-    fun validatePersonObject(verifyPersonModel: VerifyPersonodel): ObjectVerificationModel {
+    fun validatePersonObject(verifyPersonModel: VerifyPersonModel): ObjectVerificationModel {
         val objectVerificationModel = ObjectVerificationModel(true, "Default", "Default")
 
 

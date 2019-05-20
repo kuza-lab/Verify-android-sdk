@@ -1,8 +1,8 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/17/19 1:16 PM
+ *  * Created by Kogi Eric  on 5/17/19 4:11 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/17/19 1:16 PM
+ *  * Last modified 5/17/19 4:09 PM
  *
  */
 
@@ -124,7 +124,7 @@ class Verify(
     }
 
 
-    fun verifyPerson(verifyPersonModel: VerifyPersonodel, verifyUserDetailsListener: VerifyUserDetailsListener) {
+    fun verifyPerson(verifyPersonModel: VerifyPersonModel, verifyUserDetailsListener: VerifyUserDetailsListener) {
 
 
         val objectVerification = Validator().validatePersonObject(verifyPersonModel)
@@ -132,11 +132,6 @@ class Verify(
             verifyUserDetailsListener.onFailure(VerifyException(objectVerification.reasonInvalid))
             return
         }
-
-
-
-
-
 
         if (token != null) {
 
@@ -167,7 +162,7 @@ class Verify(
     }
 
     private fun loadVerifyPerson(
-        verifyPersonModel: VerifyPersonodel,
+        verifyPersonModel: VerifyPersonModel,
         verifyUserDetailsListener: VerifyUserDetailsListener
     ) {
 
@@ -466,14 +461,14 @@ class Verify(
     }
 
     fun verifyNcaContractor(
-        verifyNcaContractor: VerifyNcaContractor, verifyNcaContractorListener: verifyNcaContractorListener
+        verifyNcaContractor: VerifyNcaContractor, VerifyNcaContractorListener: VerifyNcaContractorListener
     ) {
 
 
         val objectVerificationModel = Validator().validateNcaObject(verifyNcaContractor)
 
         if (!objectVerificationModel.isValid) {
-            verifyNcaContractorListener.onFailure(VerifyException(objectVerificationModel.reasonInvalid))
+            VerifyNcaContractorListener.onFailure(VerifyException(objectVerificationModel.reasonInvalid))
             return
         }
 
@@ -482,23 +477,23 @@ class Verify(
 
         if (token != null) {
 
-            loadverifyNcaContractor(verifyNcaContractor, verifyNcaContractorListener)
+            loadverifyNcaContractor(verifyNcaContractor, VerifyNcaContractorListener)
 
 
         } else {
             generateToken(object : TokenCallListener {
                 override fun onTokenCallStarted() {
-                    verifyNcaContractorListener.onCallStarted()
+                    VerifyNcaContractorListener.onCallStarted()
 
                 }
 
                 override fun onTokenRecieved(token: Token) {
-                    loadverifyNcaContractor(verifyNcaContractor, verifyNcaContractorListener)
+                    loadverifyNcaContractor(verifyNcaContractor, VerifyNcaContractorListener)
 
                 }
 
                 override fun onTokenCallFailed(verifyException: VerifyException) {
-                    verifyNcaContractorListener.onFailure(verifyException)
+                    VerifyNcaContractorListener.onFailure(verifyException)
 
                 }
             })
@@ -508,12 +503,12 @@ class Verify(
     }
 
     private fun loadverifyNcaContractor(
-        verifyNcaContractor: VerifyNcaContractor, verifyNcaContractorListener: verifyNcaContractorListener
+        verifyNcaContractor: VerifyNcaContractor, VerifyNcaContractorListener: VerifyNcaContractorListener
     ) {
-        verifyNcaContractorListener.onCallStarted()
+        VerifyNcaContractorListener.onCallStarted()
 
         if (!NetworkUtils.isConnected(context)) {
-            verifyNcaContractorListener.onFailure(VerifyException("No internet connection"))
+            VerifyNcaContractorListener.onFailure(VerifyException("No internet connection"))
             return
         }
         GlobalScope.launch(context = Dispatchers.Main) {
@@ -521,7 +516,7 @@ class Verify(
                 .verifyNcaContractor(verifyNcaContractor.registration_no!!, verifyNcaContractor)
             call.enqueue(object : Callback<VerifyNcaContractorResponse> {
                 override fun onFailure(call: Call<VerifyNcaContractorResponse>?, t: Throwable?) {
-                    verifyNcaContractorListener.onFailure(VerifyException("" + t))
+                    VerifyNcaContractorListener.onFailure(VerifyException("" + t))
                 }
 
                 override fun onResponse(
@@ -531,9 +526,9 @@ class Verify(
                     if (response != null) {
                         if (response.isSuccessful) {
                             if (response.body()?.success == true && response.body()?.data != null) {
-                                verifyNcaContractorListener.onResponse(response.body()?.data!!)
+                                VerifyNcaContractorListener.onResponse(response.body()?.data!!)
                             } else {
-                                verifyNcaContractorListener.onFailure(
+                                VerifyNcaContractorListener.onFailure(
                                     VerifyException(
                                         response.body()?.message,
                                         "",
@@ -543,11 +538,11 @@ class Verify(
 
                             }
                         } else {
-                            verifyNcaContractorListener.onFailure(ErrorUtils().parseError(response))
+                            VerifyNcaContractorListener.onFailure(ErrorUtils().parseError(response))
 
                         }
                     } else {
-                        verifyNcaContractorListener.onFailure(VerifyException("Could Not Load Data"))
+                        VerifyNcaContractorListener.onFailure(VerifyException("Could Not Load Data"))
 
                     }
 
