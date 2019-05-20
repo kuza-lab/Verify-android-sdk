@@ -1,14 +1,14 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/17/19 8:29 AM
+ *  * Created by Kogi Eric  on 5/20/19 5:42 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/17/19 8:24 AM
+ *  * Last modified 5/20/19 3:58 PM
  *
  */
 
 package com.kuzalab.verifysdk.models
 
-class ErrorBody {
+internal class ErrorBody {
 
     var status_code: Int? = 0
     var status_name: String? = "Error"

@@ -1,14 +1,14 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/17/19 4:11 PM
+ *  * Created by Kogi Eric  on 5/20/19 5:42 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/17/19 4:11 PM
+ *  * Last modified 5/20/19 3:58 PM
  *
  */
 
 package com.kuzalab.verifysdk.models
 
-class ObjectVerificationModel {
+internal class ObjectVerificationModel {
     constructor(b: Boolean, s: String, s1: String) {
         this.isValid = b
         this.invalidField = s
