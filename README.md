@@ -25,6 +25,8 @@ repositories {
     
     
 Then add the dependancy
+
+
 **Example  2**
 
 ```java
@@ -47,7 +49,7 @@ In the activity you plan to use the sdk, initialize using the builder pattern an
      
 ```
 
-There are two enviroments  **PRODUCTION**  and   **SANDBOX **  .  
+There are two enviroments  **PRODUCTION**  and   **SANDBOX**   
 
      
      
