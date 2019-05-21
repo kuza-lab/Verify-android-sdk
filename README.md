@@ -40,28 +40,26 @@ repositories {
             .build()
      
 ```
+
+There are two enviroments ##PRODUCTION  and ##SANDBOX .  
+
      
      
 #You can then proceed to use the created Verify object to perfom other operations 
 
-##Example
+##Example  1
      
 ```kotlin
-  private fun searchPerson(personId: String) {
-        v?.getPerson(personId, object : GetUserDetailsListener {
+    v?.getPerson(personId, object : GetUserDetailsListener {
             override fun onCallStarted() {
 
-                setProgressBarVisibility(View.VISIBLE)
+                
             }
 
             override fun onResponse(person: Person) {
-                setProgressBarVisibility(View.GONE)
-                showPersonResponseDialog(person)
             }
 
             override fun onFailure(verifyException: VerifyException) {
-                setProgressBarVisibility(View.GONE)
-                showError(verifyException)
 
             }
         })
