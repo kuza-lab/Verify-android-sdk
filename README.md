@@ -41,13 +41,13 @@ repositories {
      
 ```
 
-There are two enviroments ## PRODUCTION  and ## SANDBOX .  
+There are two enviroments  **PRODUCTION**  and **SANDBOX **.  
 
      
      
-#You can then proceed to use the created Verify object to perfom other operations 
+You can then proceed to use the created Verify object to perfom other operations 
 
-##Example  1
+**Example  2
      
 ```kotlin
     v?.getPerson(personId, object : GetUserDetailsListener {
@@ -69,6 +69,129 @@ There are two enviroments ## PRODUCTION  and ## SANDBOX .
    
     
 ```
+**Example  2
+
+```kotlin
+    v?.verifyPerson(verifyPersonModel, object : VerifyUserDetailsListener {
+            override fun onCallStarted() {
+               
+
+            }
+
+            override fun onResponse(paramsResponse: List<ParamsResponse>) {
+               
+            }
+
+            override fun onFailure(verifyException: VerifyException) {
+               
+            }
+        })
+    
+    
+   
+    
+```
+
+
+**Example  3
+
+```kotlin
+    v?.searchNcaContractorById(contractorRegId, object : SearchNcaContractorByIdListener {
+            override fun onCallStarted() {
+              
+            }
+
+            override fun onResponse( ncaContractor: NcaContractor) {
+                
+            }
+
+            override fun onFailure(verifyException: VerifyException) {
+                
+            }
+        })
+    
+    
+   
+    
+```
+
+**Example  4
+
+```kotlin
+     v?.searchNcaContractorByName(contractorName, object : SearchNcaContractorByNameListener {
+            override fun onCallStarted() {
+              
+            }
+
+            override fun onResponse(ncaContractor: List<NcaContractor>) {
+               
+            }
+
+            override fun onFailure(verifyException: VerifyException) {
+                
+            }
+        })
+    
+    
+   
+    
+```
+
+**Example  5
+
+```kotlin
+     v?.verifyNcaContractor(verifyNcaContractor, object : VerifyNcaContractorListener {
+            override fun onCallStarted() {
+               
+            }
+
+            override fun onResponse(paramsResponse: List<ParamsResponse>) {
+                
+            }
+
+            override fun onFailure(verifyException: VerifyException) {
+               
+            }
+        })
+    
+   
+    
+```
+
+**Cancel an on going request**
+To cancel an ongoing request, use the tag returned from the call
+
+**Example 6
+
+```kotlin
+    var tag: String?=null
+    
+    tag= v?.verifyNcaContractor(verifyNcaContractor, object : VerifyNcaContractorListener {
+            override fun onCallStarted() {
+               
+            }
+
+            override fun onResponse(paramsResponse: List<ParamsResponse>) {
+                
+            }
+
+            override fun onFailure(verifyException: VerifyException) {
+               
+            }
+        })
+        
+        
+        
+        
+        v?.cancel(tag)
+    
+   
+    
+```
+
+
+
+
 
 Make sure to add internet perissions to your manifest
 
