@@ -1,8 +1,8 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/21/19 1:09 PM
+ *  * Created by Kogi Eric  on 5/21/19 1:42 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/21/19 1:09 PM
+ *  * Last modified 5/21/19 1:42 PM
  *
  */
 
@@ -68,10 +68,16 @@ class MainActivity : AppCompatActivity() {
         btn_verify_person.setOnClickListener { launchDialog(DIALOGS.VERIFYPERSON) }
         btn_search_contactor_id.setOnClickListener { launchDialog(DIALOGS.SEARCHNCACONTRACTORID) }
         btn_search_contractor_name.setOnClickListener { launchDialog(DIALOGS.SEARCHNCACONTRACTORNAME) }
-        //btn_verify_contractor.setOnClickListener { launchDialog(DIALOGS.VERIFYNCACONTRACTOR) }
-        btn_verify_contractor.setOnClickListener { v?.cancel(tag) }
+        btn_cancel_request.setOnClickListener { cancelRequest() }
+        btn_verify_contractor.setOnClickListener { launchDialog(DIALOGS.VERIFYNCACONTRACTOR) }
 
     }
+
+    private fun cancelRequest() {
+        v?.cancel(tag)
+    }
+
+
 
     private fun showEnviromentDialog() {
 
@@ -458,6 +464,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun searchPerson(personId: String) {
+        btn_cancel_request.isEnabled = true
 
         tag = v?.getPerson(personId, object : GetUserDetailsListener {
             override fun onCallStarted() {
@@ -481,6 +488,8 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun verifyPerson(verifyPersonModel: VerifyPersonModel) {
+        btn_cancel_request.isEnabled = true
+
         val call = v?.verifyPerson(verifyPersonModel, object : VerifyUserDetailsListener {
             override fun onCallStarted() {
                 setProgressBarVisibility(View.VISIBLE)
@@ -501,6 +510,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun searchNcaContractorById(contractorRegId: String) {
+        btn_cancel_request.isEnabled = true
+
         val tag = v?.searchNcaContractorById(contractorRegId, object : SearchNcaContractorByIdListener {
             override fun onCallStarted() {
                 setProgressBarVisibility(View.VISIBLE)
@@ -525,6 +536,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun searchNcaContractorByName(contractorName: String) {
+        btn_cancel_request.isEnabled = true
+
         val tag = v?.searchNcaContractorByName(contractorName, object : SearchNcaContractorByNameListener {
             override fun onCallStarted() {
                 setProgressBarVisibility(View.VISIBLE)
@@ -549,6 +562,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun verifyNcaContractor(verifyNcaContractor: VerifyNcaContractor) {
+        btn_cancel_request.isEnabled = true
         val call = v?.verifyNcaContractor(verifyNcaContractor, object : VerifyNcaContractorListener {
             override fun onCallStarted() {
                 setProgressBarVisibility(View.VISIBLE)
@@ -573,16 +587,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setProgressBarVisibility(visible: Int) {
+
         if (progress_bar != null) {
             progress_bar?.visibility = visible
         }
 
         if (visible == View.VISIBLE) {
+            btn_cancel_request.isEnabled = true
+
 //            window?.setFlags(
 //                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
 //                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
 //            )
+
         } else {
+            btn_cancel_request.isEnabled = false
+
             window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
         }
     }

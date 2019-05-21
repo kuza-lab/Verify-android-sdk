@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ /**
-  ~  * Created by Kogi Eric  on 5/20/19 5:42 PM
+  ~  * Created by Kogi Eric  on 5/21/19 1:42 PM
   ~  * Copyright (c) 2019 . All rights reserved.
-  ~  * Last modified 5/20/19 3:19 PM
+  ~  * Last modified 5/21/19 1:16 PM
   ~  */
   -->
 
@@ -81,5 +81,13 @@
                  android:id="@+id/progress_bar"
                  android:layout_centerInParent="true"
                  android:layout_height="wrap_content"/>
+
+    <Button android:layout_width="match_parent"
+            android:text="Cancel Request"
+            android:enabled="false"
+            android:id="@+id/btn_cancel_request"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="12dp"
+            android:layout_height="wrap_content"/>
 
 </RelativeLayout>
