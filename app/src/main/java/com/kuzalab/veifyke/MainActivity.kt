@@ -1,8 +1,8 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/20/19 10:23 PM
+ *  * Created by Kogi Eric  on 5/21/19 1:09 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/20/19 10:21 PM
+ *  * Last modified 5/21/19 1:09 PM
  *
  */
 
@@ -17,6 +17,7 @@ import android.os.Bundle
 import android.text.InputType
 import android.view.View
 import android.view.WindowManager
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -37,6 +38,7 @@ class MainActivity : AppCompatActivity() {
 
     private var edtConsumerKey: EditText? = null
     private var edtSecretKey: EditText? = null
+    private var chkSaveKeys: CheckBox? = null
     private var edtIdNumber: EditText? = null
     private var edtFristName: EditText? = null
     private var edtSirName: EditText? = null
@@ -99,7 +101,13 @@ class MainActivity : AppCompatActivity() {
         initVerify(environment = Environment.SANDBOX)
     }
 
-    private fun setProductionAsEnviroment(consumerKey: String?, secretKey: String?) {
+    private fun setProductionAsEnviroment(consumerKey: String?, secretKey: String?, saveKeys: Boolean?) {
+        if (saveKeys != null && saveKeys) {
+
+            if (secretKey != null && consumerKey != null) {
+                PrefrenceManager(this).savekeys(secretKey, consumerKey)
+            }
+        }
         initVerify(consumerKey = consumerKey, secretKey = secretKey, environment = Environment.PRODUCTION)
     }
 
@@ -122,13 +130,28 @@ class MainActivity : AppCompatActivity() {
             DIALOGS.KEYS -> {
                 edtConsumerKey = EditText(this)
                 edtConsumerKey?.hint = "Consumer Key "
-                edtConsumerKey?.inputType = InputType.TYPE_CLASS_TEXT
+                edtConsumerKey?.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
                 layout.addView(edtConsumerKey)
+                val consumerKey = PrefrenceManager(this).getConsumerKey()
+                if (consumerKey != null) {
+                    edtConsumerKey?.setText(consumerKey)
+                }
 
                 edtSecretKey = EditText(this)
                 edtSecretKey?.hint = "Secret Key "
-                edtSecretKey?.inputType = InputType.TYPE_CLASS_TEXT
+
+                edtSecretKey?.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
                 layout.addView(edtSecretKey)
+                val secretKey = PrefrenceManager(this).getSecretKey()
+                if (secretKey != null) {
+                    edtSecretKey?.setText(secretKey)
+                }
+
+                chkSaveKeys = CheckBox(this)
+                chkSaveKeys?.text = "Save Keys "
+                chkSaveKeys?.isSelected = true
+                layout.addView(chkSaveKeys)
+
 
 
             }
@@ -297,7 +320,11 @@ class MainActivity : AppCompatActivity() {
 
         when (dialog) {
             DIALOGS.KEYS -> {
-                setProductionAsEnviroment(edtConsumerKey?.text.toString(), edtSecretKey?.text.toString())
+                setProductionAsEnviroment(
+                    edtConsumerKey?.text.toString(),
+                    edtSecretKey?.text.toString(),
+                    chkSaveKeys?.isSelected
+                )
             }
 
             DIALOGS.SEARCHPERSON -> {
