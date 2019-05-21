@@ -1,8 +1,8 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/17/19 8:29 AM
+ *  * Created by Kogi Eric  on 5/20/19 5:42 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/17/19 8:24 AM
+ *  * Last modified 5/20/19 3:58 PM
  *
  */
 
@@ -11,7 +11,7 @@ package com.kuzalab.verifysdk.interfaces
 import com.kuzalab.verifysdk.models.Token
 import com.kuzalab.verifysdk.models.VerifyException
 
-interface TokenCallListener {
+internal interface TokenCallListener {
     fun onTokenCallStarted()
     fun onTokenRecieved(token: Token)
     fun onTokenCallFailed(verifyException: VerifyException)

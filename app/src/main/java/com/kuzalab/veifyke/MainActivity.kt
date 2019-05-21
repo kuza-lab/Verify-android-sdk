@@ -1,15 +1,15 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/17/19 4:11 PM
+ *  * Created by Kogi Eric  on 5/21/19 1:42 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/17/19 4:10 PM
+ *  * Last modified 5/21/19 1:42 PM
  *
  */
 
 package com.kuzalab.veifyke
 
 
-import Enviroment
+import Environment
 import Verify
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
@@ -17,6 +17,7 @@ import android.os.Bundle
 import android.text.InputType
 import android.view.View
 import android.view.WindowManager
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -35,6 +36,9 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
+    private var edtConsumerKey: EditText? = null
+    private var edtSecretKey: EditText? = null
+    private var chkSaveKeys: CheckBox? = null
     private var edtIdNumber: EditText? = null
     private var edtFristName: EditText? = null
     private var edtSirName: EditText? = null
@@ -52,28 +56,75 @@ class MainActivity : AppCompatActivity() {
     private var v: Verify? = null
 
 
+    private var tag: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        v = Verify.Builder(this)
-            .secretKey("tIpl3tw0agl9urNqianIAiYzPR5YnFMGriIad0qjcPq1c9HGsUuJhOkQRfZ5MuJY")
-            .consumerKey("7Jp5N68ctdAtxqruKtQtFHmgLneY3S8Cz2iOKPtF4D5s715A1XWDo3oHHlEZ4Jgf")
-            .enviroment(Enviroment.PRODUCTION)
-            .build()
-
-
-
-
-
-
-
+        showEnviromentDialog()
         setProgressBarVisibility(View.GONE)
+        btn_enviroment.setOnClickListener { showEnviromentDialog() }
         btn_search_person.setOnClickListener { launchDialog(DIALOGS.SEARCHPERSON) }
         btn_verify_person.setOnClickListener { launchDialog(DIALOGS.VERIFYPERSON) }
         btn_search_contactor_id.setOnClickListener { launchDialog(DIALOGS.SEARCHNCACONTRACTORID) }
         btn_search_contractor_name.setOnClickListener { launchDialog(DIALOGS.SEARCHNCACONTRACTORNAME) }
+        btn_cancel_request.setOnClickListener { cancelRequest() }
         btn_verify_contractor.setOnClickListener { launchDialog(DIALOGS.VERIFYNCACONTRACTOR) }
+
+    }
+
+    private fun cancelRequest() {
+        v?.cancel(tag)
+    }
+
+
+
+    private fun showEnviromentDialog() {
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Environment")
+        builder.setMessage("Please choose the environment to use for accessing verifyke services")
+        builder.setCancelable(false)
+        builder.setPositiveButton("Sandbox") { _, _ -> setSandboxAsEnviroment() }
+        builder.setNegativeButton("Production") { _, _ -> showKeysEntryDialog() }
+        builder.show()
+    }
+
+    private fun showKeysEntryDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("")
+        builder.setMessage("")
+        builder.setView(getLayout(DIALOGS.KEYS))
+        builder.setCancelable(false)
+        builder.setPositiveButton("Complete") { _, _ -> actOnAction(DIALOGS.KEYS) }
+        builder.setNegativeButton("Cancel") { _, _ -> setSandboxAsEnviroment() }
+        builder.show()
+
+    }
+
+
+    private fun setSandboxAsEnviroment() {
+        initVerify(environment = Environment.SANDBOX)
+    }
+
+    private fun setProductionAsEnviroment(consumerKey: String?, secretKey: String?, saveKeys: Boolean?) {
+        if (saveKeys != null && saveKeys) {
+
+            if (secretKey != null && consumerKey != null) {
+                PrefrenceManager(this).savekeys(secretKey, consumerKey)
+            }
+        }
+        initVerify(consumerKey = consumerKey, secretKey = secretKey, environment = Environment.PRODUCTION)
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun initVerify(consumerKey: String? = null, secretKey: String? = null, environment: Environment) {
+        txt_environment.text = "Current Environment \n${environment.name}"
+        v = Verify.Builder(this)
+            .secretKey(secretKey)
+            .consumerKey(consumerKey)
+            .environment(environment)
+            .build()
 
     }
 
@@ -82,6 +133,34 @@ class MainActivity : AppCompatActivity() {
         layout.orientation = LinearLayout.VERTICAL
 
         when (dialog) {
+            DIALOGS.KEYS -> {
+                edtConsumerKey = EditText(this)
+                edtConsumerKey?.hint = "Consumer Key "
+                edtConsumerKey?.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
+                layout.addView(edtConsumerKey)
+                val consumerKey = PrefrenceManager(this).getConsumerKey()
+                if (consumerKey != null) {
+                    edtConsumerKey?.setText(consumerKey)
+                }
+
+                edtSecretKey = EditText(this)
+                edtSecretKey?.hint = "Secret Key "
+
+                edtSecretKey?.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
+                layout.addView(edtSecretKey)
+                val secretKey = PrefrenceManager(this).getSecretKey()
+                if (secretKey != null) {
+                    edtSecretKey?.setText(secretKey)
+                }
+
+                chkSaveKeys = CheckBox(this)
+                chkSaveKeys?.text = "Save Keys "
+                chkSaveKeys?.isSelected = true
+                layout.addView(chkSaveKeys)
+
+
+
+            }
             DIALOGS.SEARCHPERSON -> {
                 edtIdNumber = EditText(this)
                 edtIdNumber?.hint = "Person's ID number "
@@ -246,6 +325,13 @@ class MainActivity : AppCompatActivity() {
     private fun actOnAction(dialog: DIALOGS?) {
 
         when (dialog) {
+            DIALOGS.KEYS -> {
+                setProductionAsEnviroment(
+                    edtConsumerKey?.text.toString(),
+                    edtSecretKey?.text.toString(),
+                    chkSaveKeys?.isSelected
+                )
+            }
 
             DIALOGS.SEARCHPERSON -> {
                 searchPerson(edtIdNumber?.text.toString())
@@ -378,7 +464,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun searchPerson(personId: String) {
-        v?.getPerson(personId, object : GetUserDetailsListener {
+        btn_cancel_request.isEnabled = true
+
+        tag = v?.getPerson(personId, object : GetUserDetailsListener {
             override fun onCallStarted() {
 
                 setProgressBarVisibility(View.VISIBLE)
@@ -395,11 +483,14 @@ class MainActivity : AppCompatActivity() {
 
             }
         })
+
     }
 
 
     private fun verifyPerson(verifyPersonModel: VerifyPersonModel) {
-        v?.verifyPerson(verifyPersonModel, object : VerifyUserDetailsListener {
+        btn_cancel_request.isEnabled = true
+
+        val call = v?.verifyPerson(verifyPersonModel, object : VerifyUserDetailsListener {
             override fun onCallStarted() {
                 setProgressBarVisibility(View.VISIBLE)
 
@@ -419,7 +510,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun searchNcaContractorById(contractorRegId: String) {
-        v?.searchNcaContractorById(contractorRegId, object : SearchNcaContractorByIdListener {
+        btn_cancel_request.isEnabled = true
+
+        val tag = v?.searchNcaContractorById(contractorRegId, object : SearchNcaContractorByIdListener {
             override fun onCallStarted() {
                 setProgressBarVisibility(View.VISIBLE)
 
@@ -443,7 +536,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun searchNcaContractorByName(contractorName: String) {
-        v?.searchNcaContractorByName(contractorName, object : SearchNcaContractorByNameListener {
+        btn_cancel_request.isEnabled = true
+
+        val tag = v?.searchNcaContractorByName(contractorName, object : SearchNcaContractorByNameListener {
             override fun onCallStarted() {
                 setProgressBarVisibility(View.VISIBLE)
 
@@ -463,10 +558,12 @@ class MainActivity : AppCompatActivity() {
 
             }
         })
+
     }
 
     private fun verifyNcaContractor(verifyNcaContractor: VerifyNcaContractor) {
-        v?.verifyNcaContractor(verifyNcaContractor, object : VerifyNcaContractorListener {
+        btn_cancel_request.isEnabled = true
+        val call = v?.verifyNcaContractor(verifyNcaContractor, object : VerifyNcaContractorListener {
             override fun onCallStarted() {
                 setProgressBarVisibility(View.VISIBLE)
 
@@ -485,19 +582,27 @@ class MainActivity : AppCompatActivity() {
 
             }
         })
+
+
     }
 
     private fun setProgressBarVisibility(visible: Int) {
+
         if (progress_bar != null) {
             progress_bar?.visibility = visible
         }
 
         if (visible == View.VISIBLE) {
-            window?.setFlags(
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-            )
+            btn_cancel_request.isEnabled = true
+
+//            window?.setFlags(
+//                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+//                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+//            )
+
         } else {
+            btn_cancel_request.isEnabled = false
+
             window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
         }
     }
@@ -508,7 +613,8 @@ class MainActivity : AppCompatActivity() {
         VERIFYPERSON,
         SEARCHNCACONTRACTORID,
         SEARCHNCACONTRACTORNAME,
-        VERIFYNCACONTRACTOR
+        VERIFYNCACONTRACTOR,
+        KEYS
     }
 
 }

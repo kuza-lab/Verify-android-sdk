@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ /**
-  ~  * Created by Kogi Eric  on 5/17/19 8:29 AM
+  ~  * Created by Kogi Eric  on 5/21/19 1:42 PM
   ~  * Copyright (c) 2019 . All rights reserved.
-  ~  * Last modified 5/17/19 8:24 AM
+  ~  * Last modified 5/21/19 1:16 PM
   ~  */
   -->
 
@@ -14,8 +14,31 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_alignParentTop="true"
+                  android:padding="12dp"
+                  android:orientation="vertical"
+                  android:id="@+id/linear_environment"
+                  android:layout_height="wrap_content">
+        <TextView android:layout_width="match_parent"
+                  android:textAlignment="center"
+                  android:padding="2dp"
+                  android:id="@+id/txt_environment"
+                  android:text="Current Environment :"
+                  android:layout_height="wrap_content"/>
+
+        <Button android:layout_width="match_parent"
+                android:text="Set Environment"
+
+                android:background="@color/colorAccent"
+                android:id="@+id/btn_enviroment"
+                android:layout_height="wrap_content"/>
+
+
+    </LinearLayout>
 
     <LinearLayout
+            android:layout_below="@+id/linear_environment"
             android:padding="6dp"
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -23,6 +46,7 @@
 
         <Button android:layout_width="match_parent"
                 android:text="Search A person"
+                android:layout_marginTop="20dp"
                 android:id="@+id/btn_search_person"
                 android:layout_height="wrap_content"/>
         <Button android:layout_width="match_parent"
@@ -57,5 +81,13 @@
                  android:id="@+id/progress_bar"
                  android:layout_centerInParent="true"
                  android:layout_height="wrap_content"/>
+
+    <Button android:layout_width="match_parent"
+            android:text="Cancel Request"
+            android:enabled="false"
+            android:id="@+id/btn_cancel_request"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="12dp"
+            android:layout_height="wrap_content"/>
 
 </RelativeLayout>

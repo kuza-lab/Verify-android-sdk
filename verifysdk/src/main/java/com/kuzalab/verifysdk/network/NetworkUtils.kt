@@ -1,8 +1,8 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/17/19 8:29 AM
+ *  * Created by Kogi Eric  on 5/20/19 5:42 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/17/19 8:27 AM
+ *  * Last modified 5/20/19 3:58 PM
  *
  */
 
@@ -16,7 +16,7 @@ import java.net.URL
 import java.sql.DriverManager.println
 
 
-class NetworkUtils {
+internal class NetworkUtils {
     companion object {
 
         private fun getNetworkInfo(context: Context): NetworkInfo? {

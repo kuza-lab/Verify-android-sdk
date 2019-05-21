@@ -1,12 +1,14 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/17/19 8:29 AM
+ *  * Created by Kogi Eric  on 5/20/19 10:23 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/17/19 8:24 AM
+ *  * Last modified 5/20/19 10:21 PM
  *
  */
 
-enum class Enviroment {
+enum class Environment {
     SANDBOX,
     PRODUCTION
+
+
 }

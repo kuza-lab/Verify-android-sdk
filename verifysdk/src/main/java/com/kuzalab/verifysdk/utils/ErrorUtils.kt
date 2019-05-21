@@ -1,8 +1,8 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/17/19 4:11 PM
+ *  * Created by Kogi Eric  on 5/20/19 5:42 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/17/19 2:26 PM
+ *  * Last modified 5/20/19 3:58 PM
  *
  */
 
@@ -15,7 +15,7 @@ import com.kuzalab.verifysdk.models.VerifyException
 import retrofit2.Response
 
 
-class ErrorUtils {
+internal class ErrorUtils {
 
     fun parseError(response: Response<*>): VerifyException {
 
