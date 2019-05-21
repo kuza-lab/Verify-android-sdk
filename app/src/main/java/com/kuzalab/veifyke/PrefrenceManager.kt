@@ -1,8 +1,8 @@
 /*
  * *
- *  * Created by Kogi Eric  on 5/21/19 1:09 PM
+ *  * Created by Kogi Eric  on 5/21/19 1:57 PM
  *  * Copyright (c) 2019 . All rights reserved.
- *  * Last modified 5/21/19 1:09 PM
+ *  * Last modified 5/21/19 1:57 PM
  *
  */
 
@@ -28,10 +28,6 @@ class PrefrenceManager(internal var _context: Context) {
         editor = pref.edit()
     }
 
-    fun clearUser() {
-        editor.clear()
-        editor.commit()
-    }
 
     fun savekeys(secretKey: String, consumerKey: String) {
         editor.putString(SECRETKEY, secretKey)
