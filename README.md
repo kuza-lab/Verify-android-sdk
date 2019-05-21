@@ -12,6 +12,7 @@ The sdk will authenticate to the Verify  by providing a JWT token generated usin
 ## Using the Library
 
 To use the sdk the following in the build.gradle(project)
+
 **Example  1**
 ```java
 repositories {
@@ -33,7 +34,10 @@ Then add the dependancy
 
 
 In the activity you plan to use the sdk, initialize using the builder pattern and provide your consumer secret and secret key 
+
 **Example  3**
+
+
 ```kotlin
     v = Verify.Builder(this)
             .secretKey("secret key here")
@@ -49,7 +53,9 @@ There are two enviroments  **PRODUCTION**  and   **SANDBOX **  .
      
 You can then proceed to use the created Verify object to perfom other operations 
 
+
 **Example  4**
+
      
 ```kotlin
     v?.getPerson(personId, object : GetUserDetailsListener {
@@ -71,6 +77,7 @@ You can then proceed to use the created Verify object to perfom other operations
    
     
 ```
+
 **Example  5**
 
 ```kotlin
@@ -160,6 +167,8 @@ You can then proceed to use the created Verify object to perfom other operations
     
 ```
 **Cancel an on going request**
+
+
 To cancel an ongoing request, use the tag returned from the call
 
 **Example 9**
